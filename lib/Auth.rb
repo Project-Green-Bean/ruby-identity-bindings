@@ -11,7 +11,7 @@ require 'json'
 class Auth
 
 	def initialize(name, password, ip_address, port_1, port_2)
-		@name = name
+		@user_name = name
 		@password = password
 		@ip_address = ip_address
 		@port_1 = port_1
@@ -21,18 +21,20 @@ class Auth
 	#Authenticate to generate a (admin) token.
 	def auth(tenant)
 		
-		auth = {"auth" => {"passwordCredentials"  => {"username" => @name, "password" => @password}, "tenantName" => tenant}}
+		auth = {"auth" => {"passwordCredentials"  => {"username" => @user_name, "password" => @password}, "tenantName" => tenant}}
 		
 		json_string = JSON.generate(auth)
 		
 		post_call = Curl::Easy.http_post("#{@ip_address}:#{@port_1}/v2.0/tokens", json_string
-										 )do |curl|  curl.headers['Content-Type'] = 'application/json' end
+		)do |curl|  curl.headers['Content-Type'] = 'application/json' end
 		
-		pcr = JSON.parse(post_call.body_str)
-		@token = pcr["access"]["token"]["id"]
+		parsed_json = JSON.parse(post_call.body_str)
+		@token = parsed_json["access"]["token"]["id"]
+		
+		return @token
 	end
 	
-
+	
 	begin #TENANT OPS
 	#//////////////////////////////////////////////////////////////////////////////////////////////////
 	#TENANT OPS
@@ -41,23 +43,22 @@ class Auth
 	#--------------------------------------------------------------------------------------------------
 	#tenant_get
 	#Description: Display tenant details
-	#????? NOT DONE YET --
 	# -------------------------------------------------------------------------------------------------
 	def tenant_get(tenant_id)
 		
 		get_call = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/tenants/#{tenant_id}"
-									  ) do |curl| curl.headers['x-auth-token'] = @token end
+		) do |curl| curl.headers['x-auth-token'] = @token end
 		
 		#TODO -- it's working when you pass it an id in the url...figure out how to make it work when passed just the name???
 		puts "invoking tenant-get..."
 		
-		prs = JSON.parse(get_call.body_str)
+		parsed_json = JSON.parse(get_call.body_str)
 		
-		puts prs
-		
+		puts parsed_json
+		return parsed_json
 	end
 	
-
+	
 	#--------------------------------------------------------------------------------------------------
 	#tenant_list             
 	#Description: List all tenants
@@ -65,13 +66,14 @@ class Auth
 	def tenant_list
 		
 		get_call = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/tenants"
-									  ) do |curl| curl.headers['x-auth-token'] = @token end
+		) do |curl| curl.headers['x-auth-token'] = @token end
 		
 		puts "invoking tenant-list..."
 		
-		prs = JSON.parse(get_call.body_str)
+		parsed_json = JSON.parse(get_call.body_str)
 		
-		puts prs
+		puts parsed_json
+		return parsed_json
 	end
 	
 	
@@ -86,15 +88,15 @@ class Auth
 		json_string = JSON.generate(tenant)
 	
 		post_call = Curl::Easy.http_post("#{@ip_address}:#{@port_2}/v2.0/tenants", json_string
-								    ) do |curl|
-									    curl.headers['x-auth-token'] = @token
-										curl.headers['Content-Type'] = 'application/json'
-								      end
+		) do |curl|
+			curl.headers['x-auth-token'] = @token
+			curl.headers['Content-Type'] = 'application/json'
+		end
 		
-		prs = JSON.parse(post_call.body_str)
+		parsed_json = JSON.parse(post_call.body_str)
 		
-		puts prs
-	
+		puts parsed_json
+		return parsed_json
 	end
 	
 	#--------------------------------------------------------------------------------------------------
@@ -110,14 +112,14 @@ class Auth
 		json_string = JSON.generate(tenant)
 	
 		post_call = Curl::Easy.http_post("#{@ip_address}:#{@port_2}/tenants/#{id}", json_string
-								    ) do |curl|
-									    curl.headers['x-auth-token'] = @token
-										curl.headers['Content-Type'] = 'application/json'
-								      end
-		prs = JSON.parse(post_call.body_str)
+		) do |curl|
+			curl.headers['x-auth-token'] = @token
+			curl.headers['Content-Type'] = 'application/json'
+		end
+		parsed_json = JSON.parse(post_call.body_str)
 		
-		puts prs
-	
+		puts parsed_json
+		return parsed_json
 	end
 	
 	#--------------------------------------------------------------------------------------------------
@@ -127,13 +129,12 @@ class Auth
 	def tenant_delete(tenant_id)
 	
 		delete_call = Curl::Easy.http_delete("#{@ip_address}:#{@port_2}/v2.0/tenants/#{tenant_id}"
-											) do |curl|
-												curl.headers['x-auth-token'] = @token
-												curl.headers['userId'] = tenant_id
-											  end
+		) do |curl|
+			curl.headers['x-auth-token'] = @token
+			curl.headers['userId'] = tenant_id
+		 end
 		
 		puts "invoked tenant delete"
-	
 	end
 	
 	
@@ -155,16 +156,16 @@ class Auth
 	
 		json_string = JSON.generate(user)
 	
-		post_call = Curl::Easy.http_post("#{@ip_address}:#{@port_2}/v2.0/users", 
-									      json_string
-								    ) do |curl|
-									    curl.headers['x-auth-token'] = @token
-										curl.headers['Content-Type'] = 'application/json'
-								      end
+		post_call = Curl::Easy.http_post("#{@ip_address}:#{@port_2}/v2.0/users", json_string
+		) do |curl|
+			curl.headers['x-auth-token'] = @token
+			curl.headers['Content-Type'] = 'application/json'
+		end
 									  
-		prs = JSON.parse(post_call.body_str)
+		parsed_json = JSON.parse(post_call.body_str)
 		
-		puts prs
+		puts parsed_json
+		return parsed_json
 	end
 	
 	#--------------------------------------------------------------------------------------------------
@@ -173,10 +174,10 @@ class Auth
 	# -------------------------------------------------------------------------------------------------
 	def user_delete(user_id)
 		delete_call = Curl::Easy.http_delete("#{@ip_address}:#{@port_2}/v2.0/users/#{user_id}"
-											) do |curl|
-												curl.headers['x-auth-token'] = @token
-												curl.headers['userId'] = user_id
-											  end
+		) do |curl|
+			curl.headers['x-auth-token'] = @token
+			curl.headers['userId'] = user_id
+		end
 	
 	end 
 	
@@ -186,14 +187,13 @@ class Auth
 	# -------------------------------------------------------------------------------------------------
 	def user_list
 		get_call = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/users/",
-									) do |curl| 
-										curl.headers['x-auth-token'] = @token
-									end
+		) do |curl| curl.headers['x-auth-token'] = @token end
 		
 		puts "Here is a list of users..."
-		prs = JSON.parse(get_call.body_str)
+		parsed_json = JSON.parse(get_call.body_str)
 		
-		puts prs
+		puts parsed_json
+		return parsed_json
 	end
 	
 	end #USER OPS
@@ -208,30 +208,26 @@ class Auth
 	# -------------------------------------------------------------------------------------------------
 	def catalog
 		get_call = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/tokens/#{@token}"
-									   ) do |curl| curl.headers['x-auth-token'] = @token end
-									   
-		puts "Here is the catalog for this tenant... \n\n"
-		prs = JSON.parse(get_call.body_str)
+		) do |curl| curl.headers['x-auth-token'] = @token end
 		
-		puts prs
+		puts "Here is the catalog for this tenant... \n\n"
+		parsed_json = JSON.parse(get_call.body_str)
+		
+		puts parsed_json
+		return parsed_json
 	end
 
-	
 	#--------------------------------------------------------------------------------------------------
 	#token_get
 	#Description: Display the current user token
-	#??????? - NOT COMPLETE
 	#--------------------------------------------------------------------------------------------------
 	def token_get()
-		puts "Here is the token " + @token
+		puts "Here is the token  " + @token
 	end
 
 	end #MISC. OPS
 
 end
-
-
-
 
 
 
