@@ -229,7 +229,48 @@ class Auth
 
 
 
-	end #USER OPS
+  end #USER OPS
+
+  begin #Service OPS
+  def service_create(name, service_type, description) #Add service to Service Catalog
+    service = {"OS-KSADM:service" =>
+                   {"name" => name,
+                    "service_type" => service_type,
+                    "description" => description}}
+    json_string = JSON.generate(service)
+    post_call = Curl::Easy.http_post("#{@ip_address}:#{@port_2}/v2.0/OS-KSADM/services", json_string
+    ) do |curl|
+      curl.headers['x-auth-token'] = @token
+      curl.headers['Content-Type'] = 'application/json'
+    end
+    parsed_json = JSON.parse(post_call.body_str)
+    puts parsed_json
+    return parsed_json
+  end
+
+  def service_delete(id)      #Delete service from Service Catalog
+    delete_call = Curl::Easy.http_delete("#{@ip_address}:#{@port_2}/v2.0/OS-KSADM/services/#{id}"
+    ) do |curl|			curl.headers['x-auth-token'] = @token end
+  end
+
+  def service_get(id)         #Display service from Service Catalog
+    get_call = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/OS-KSADM/services/#{id}"
+    )do |curl|curl.headers['x-auth-token'] = @token end
+    puts "invoking service-get..."
+    parsed_json = JSON.parse(get_call.body_str)
+    puts parsed_json
+    return parsed_json
+  end
+
+  def service_list()        #List all services in Service Catalog
+    get_call = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/OS-KSADM/services"
+    ) do |curl| curl.headers['x-auth-token'] = @token end
+    puts "invoking service-list..."
+    parsed_json = JSON.parse(get_call.body_str)
+    puts parsed_json
+    return parsed_json
+  end
+  end #Service OPS
 	
 	begin #MISC. OPS
 	#//////////////////////////////////////////////////////////////////////////////////////////////////
