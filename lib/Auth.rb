@@ -235,7 +235,7 @@ class Auth
   def service_create(name, service_type, description) #Add service to Service Catalog
     service = {"OS-KSADM:service" =>
                    {"name" => name,
-                    "service_type" => service_type,
+                    "type" => service_type,
                     "description" => description}}
     json_string = JSON.generate(service)
     post_call = Curl::Easy.http_post("#{@ip_address}:#{@port_2}/v2.0/OS-KSADM/services", json_string
