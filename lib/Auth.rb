@@ -200,6 +200,32 @@ class Auth
 
 
 
+  def user_get(user_id)
+    get_call = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/users/#{user_id}"
+    ) do |curl|
+      curl.headers['x-auth-token'] = @token
+      curl.headers['userId'] = user_id
+    end
+
+    puts "user_get returns"
+
+    parsed_json = JSON.parse(get_call.body_str)
+
+    puts parsed_json
+    return parsed_json
+  end
+
+  def user_password_update(user_id, password)
+    script = {"user" => {"id" => user_id,"password" => password}}
+    jsonscript = JSON.generate(script)
+    puts jsonscript
+    get_call = Curl::Easy.http_put("#{@ip_address}:#{@port_2}/v2.0/users/#{user_id}/OS-KSADM/password", jsonscript
+    ) do |curl|
+      curl.headers['x-auth-token'] = @token
+      curl.headers['Content-Type'] = 'application/json'
+    end
+    puts JSON.parse(get_call.body_str)
+  end
 
 
 
