@@ -167,7 +167,9 @@ class Auth
 		puts parsed_json
 		return parsed_json
 	end
-	
+
+
+
 	#--------------------------------------------------------------------------------------------------
 	#user_delete
 	#Description: Delete user
@@ -186,7 +188,7 @@ class Auth
 	#Description: List users
 	# -------------------------------------------------------------------------------------------------
 	def user_list
-		get_call = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/users/",
+		get_call = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/users/"
 		) do |curl| curl.headers['x-auth-token'] = @token end
 		
 		puts "Here is a list of users..."
@@ -195,7 +197,12 @@ class Auth
 		puts parsed_json
 		return parsed_json
 	end
-	
+
+
+
+
+
+
 	end #USER OPS
 	
 	begin #MISC. OPS
