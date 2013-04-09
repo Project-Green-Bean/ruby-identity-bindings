@@ -1,4 +1,4 @@
-require 'C:\Users\JuanJose\Desktop\Keystone\lib\keystone.rb'
+require File.join(File.dirname(__FILE__), '../lib/keystone.rb')
 require 'test/unit'
 #testing the auth function
 

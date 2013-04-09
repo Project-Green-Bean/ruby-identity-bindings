@@ -131,10 +131,10 @@ class Keystone
 		#User List
 		#----------
 		def user_list
-			get_call = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/users/",
+			get_call = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/users/"
 			) do |curl| curl.headers['x-auth-token'] = @token end
 				parsed_json = JSON.parse(get_call.body_str)
-				puts JSON.pretty_generate(parsed_json)
+				#puts JSON.pretty_generate(parsed_json)
 			return parsed_json
 		end
 	end #USER OPS
@@ -437,7 +437,7 @@ class Keystone
 		#Endpoint List
 		#----------
 		def endpoint_list
-			get_call = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/endpoints/",
+			get_call = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/endpoints/"
 			) do |curl| curl.headers['x-auth-token'] = @token end
 		
 			#puts "Here is a list of endpoints..."
