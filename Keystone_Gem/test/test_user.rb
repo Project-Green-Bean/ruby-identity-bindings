@@ -42,23 +42,43 @@ class TestUser < Test::Unit::TestCase
   def test_user_get
     #this should allow the retrieving of a user
     #should it fail or return an empty user when the user doesnt exist?
+    a = Keystone.new("admin", "password", "http://198.61.199.47", "5000", "35357")
+    new_user = a.user_create("lawdog", "secret", "hur@yahoo", "78f0f0f79cd241a2b6ade773f9ad5cf1")
+
+
   end
+
+  def test_user_get_doesnt_exist
+    
+  end
+
 
   def test_user_password_update
     #this should allow changing of a user's password under regular circumstances
     a = Keystone.new("admin", "password", "http://198.61.199.47","5000","35357")
     newUser = a.user_create("lawdogpasswordupdate", "secret", "lawdog@yahoo", "78f0f0f79cd241a2b6ade773f9ad5cf1")
-    a.user_password_update(newUser["user"]["name"])
+    a.user_password_update(newUser['user']['name'], "compromised")
     b = Keystone.new("lawdogpasswordupdate", "compromised", "http://198.61.199.47","5000","35357")
-
+    a.user_delete(newUser)
   end
 
   def test_user_password_update_unauthorized
     #this should not allow a user's password to be changed
+    a = Keystone.new("admin", "password", "http://198.61.199.47","5000","35357")
+    newUser = a.user_create("lawdogpasswordupdate", "secret", "lawdog@yahoo", "78f0f0f79cd241a2b6ade773f9ad5cf1")
+    newUser2 = a.user_create("lawdog", "easy", "hurr@yahoo", "78f0f0f79cd241a2b6ade773f9ad5cf1")
+    b = Keystone.new("lawdogpasswordupdate", "secret", "http://198.61.199.47","5000","35357")
+    answer = b.user_password_update(newUser['user']['name'], "compromised")
+    #TODO find way to assert that the answer is equal to the
+    #TODO error message that a user is not authorized to perform that action
   end
 
   def test_user_password_update_user_doesnt_exist
     #this should not allow a user's password to be changed
+    a = Keystone.new("admin","password", "http://198.61.199.47", "5000", "35357")
+    b.user_password_update("1000000000", "easy")
+    #TODO find way to assert that the answer is equal to the
+    #TODO error message that the user does not exist
   end
 
 end

@@ -18,3 +18,7 @@ _yardoc
 doc/
 
 .idea/workspace.xml
+
+*.xml
+
+*.iml
