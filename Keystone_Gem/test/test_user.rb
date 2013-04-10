@@ -43,13 +43,15 @@ class TestUser < Test::Unit::TestCase
     #this should allow the retrieving of a user
     #should it fail or return an empty user when the user doesnt exist?
     a = Keystone.new("admin", "password", "http://198.61.199.47", "5000", "35357")
-    new_user = a.user_create("lawdog", "secret", "hur@yahoo", "78f0f0f79cd241a2b6ade773f9ad5cf1")
-
-
+    newUser = a.user_create("lawdog", "secret", "hur@yahoo", "78f0f0f79cd241a2b6ade773f9ad5cf1")
+    assert_equal(newUser,a.user_get(newUser['user']['name']))
   end
 
   def test_user_get_doesnt_exist
-    
+    a = Keystone.new("admin", "password", "http://198.61.199.47", "5000", "35357")
+    noUser = a.user_get("0000")
+    #TODO find a way to assert that the answer is equal
+    #TODO to the json object of an empty user
   end
 
 
