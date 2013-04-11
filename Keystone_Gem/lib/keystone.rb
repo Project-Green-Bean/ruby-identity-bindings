@@ -452,7 +452,7 @@ end
 #c = Keystone.new("admin","password","http://198.61.199.47","5000","35357")
 #c.auth("tenant1")
 
-#tenant: test01 id = "d94e78ff7fb04a058ca63b547fe09c89"
+#tenant: test01 id = "d94e78ff7fb04a058`ca63b547fe09c89"
 #d = Keystone.new("test01u","password",,"http://198.61.199.47","5000","35357")
 
 #c.user_list
