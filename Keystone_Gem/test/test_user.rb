@@ -5,6 +5,7 @@ require 'test_parameters'
 
 class TestUser < Test::Unit::TestCase
 
+
   def test_user_list
     c = Keystone.new($admin, $adminPass, $serverURL, $serverPort1, $serverPort2)
     c.auth($tenant)
@@ -47,6 +48,7 @@ class TestUser < Test::Unit::TestCase
     a = Keystone.new($admin, $adminPass, $serverURL, $serverPort1, $serverPort2)
     a.auth($tenant)
     newUser = a.user_create("lawdog", "secret", "hur@yahoo", "78f0f0f79cd241a2b6ade773f9ad5cf1")
+    puts newUser
     assert_equal(newUser,a.user_get(newUser['user']['name']))
   end
 

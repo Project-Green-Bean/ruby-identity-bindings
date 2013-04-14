@@ -32,7 +32,7 @@ class Keystone
 		def auth(tenant)
 		
 			if(tenant == "")
-				puts "Error in function auth: Invalid Tenant Name"
+			#puts "Error in function auth: Invalid Tenant Name"
 				
 				return false
 			end
@@ -51,7 +51,7 @@ class Keystone
 				if(parsed_json.to_s.include? 'error')
 					error = parsed_json["error"]["message"]
 					
-					puts "Error in function auth: Failure to authenticate, reason: " + error.to_s
+				#puts "Error in function auth: Failure to authenticate, reason: " + error.to_s
 					return false
 				else
 					@catalog_json = JSON.parse(post_call.body_str)
@@ -61,7 +61,7 @@ class Keystone
 					return true
 				end
 			rescue
-				puts "Error in function auth: Failure to reach server"
+			#puts "Error in function auth: Failure to reach server"
 				return false
 			end
 		end
@@ -72,13 +72,13 @@ class Keystone
 		def user_password_update(user_id, password)
 			script = {"user" => {"id" => user_id,"password" => password}}
 			jsonscript = JSON.generate(script)
-			puts jsonscript
+		#puts jsonscript
 	   		get_call = Curl::Easy.http_put("#{@ip_address}:#{@port_2}/v2.0/users/#{user_id}/OS-KSADM/password", jsonscript
 			)do |curl|
 		  		curl.headers['x-auth-token'] = @token
 		  		curl.headers['Content-Type'] = 'application/json'
 			end
-			puts JSON.parse(get_call.body_str)
+		#puts JSON.parse(get_call.body_str)
 	  	end
 
 		#----------
@@ -91,11 +91,11 @@ class Keystone
 			  curl.headers['userId'] = user_id
 			end
 
-			puts "user_get returns"
+		#puts "user_get returns"
 
 			parsed_json = JSON.parse(get_call.body_str)
 
-			puts parsed_json
+		#puts parsed_json
 			return parsed_json
 		end
 		
@@ -112,7 +112,7 @@ class Keystone
 				curl.headers['Content-Type'] = 'application/json'
 			end
 			parsed_json = JSON.parse(post_call.body_str)
-			puts parsed_json
+		#puts parsed_json
 			return parsed_json
 		end
 
@@ -155,7 +155,7 @@ class Keystone
 				curl.headers['Content-Type'] = 'application/json'
 			end
 			parsed_json = JSON.parse(post_call.body_str)
-			puts parsed_json
+		#puts parsed_json
 			return parsed_json
 		end
 
@@ -173,9 +173,9 @@ class Keystone
 	  	def service_get(id) #Display service from Service Catalog
 			get_call = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/OS-KSADM/services/#{id}"
 			)do |curl|curl.headers['x-auth-token'] = @token end
-			puts "invoking service-get..."
+		#puts "invoking service-get..."
 			parsed_json = JSON.parse(get_call.body_str)
-			puts parsed_json
+		#puts parsed_json
 			return parsed_json
 	  	end
 
@@ -185,9 +185,9 @@ class Keystone
 	  	def service_list() #List all services in Service Catalog
 			get_call = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/OS-KSADM/services"
 			) do |curl| curl.headers['x-auth-token'] = @token end
-			puts "invoking service-list..."
+		#puts "invoking service-list..."
 			parsed_json = JSON.parse(get_call.body_str)
-			puts parsed_json
+		#puts parsed_json
 			return parsed_json
 	  	end
   	end #Service OPS
@@ -216,7 +216,7 @@ class Keystone
 		#------------
 		def tenant_list
 			if @auth == false
-				puts "You have not authenicated yourself properly!"
+			#puts "You have not authenicated yourself properly!"
 				return nil
 			end
 			
@@ -224,7 +224,7 @@ class Keystone
 			) do |curl| curl.headers['x-auth-token'] = @token end
 			
 			parsed_json = JSON.parse(get_call.body_str)
-			puts JSON.pretty_generate(parsed_json)
+		#puts JSON.pretty_generate(parsed_json)
 			
 			return parsed_json
 		end
@@ -233,7 +233,7 @@ class Keystone
 		#Tenant Get
 		#------------
 		if @auth == false
-				puts "You have not authenicated yourself properly!"
+			#puts "You have not authenicated yourself properly!"
 				return nil
 			end
 			
@@ -242,7 +242,7 @@ class Keystone
 			) do |curl| curl.headers['x-auth-token'] = @token end
 			
 			parsed_json = JSON.parse(get_call.body_str)
-			puts JSON.pretty_generate(parsed_json)
+		#puts JSON.pretty_generate(parsed_json)
 			
 			return parsed_json
 		end
@@ -252,7 +252,7 @@ class Keystone
 		#Tenant Create
 		#--------------
 		if @auth == false
-				puts "You have not authenicated yourself properly!"
+			#puts "You have not authenicated yourself properly!"
 				return nil
 			end
 			
@@ -265,7 +265,7 @@ class Keystone
 				curl.headers['Content-Type'] = 'application/json'
 			end
 			parsed_json = JSON.parse(post_call.body_str)
-			puts JSON.pretty_generate(parsed_json)
+		#puts JSON.pretty_generate(parsed_json)
 			
 			return parsed_json
 		end
@@ -284,7 +284,7 @@ class Keystone
 				curl.headers['Content-Type'] = 'application/json'
 			end
 			parsed_json = JSON.parse(post_call.body_str)
-			puts JSON.pretty_generate(parsed_json)
+		#puts JSON.pretty_generate(parsed_json)
 			
 			return parsed_json
 		end
@@ -314,7 +314,7 @@ class Keystone
 				curl.headers['Content-Type'] = 'application/json'
 			end
 			parsed_json = JSON.parse(post_call.body_str)
-			puts parsed_json
+		#puts parsed_json
 			return parsed_json
 		end
 
@@ -326,7 +326,7 @@ class Keystone
 			) do |curl|
 				curl.headers['x-auth-token'] = @token
 			end
-			puts "invoked role delete"
+		#puts "invoked role delete"
 		end
 
 		#----------
@@ -338,7 +338,7 @@ class Keystone
 
 			parsed_json = JSON.parse(get_call.body_str)
 
-			puts parsed_json
+		#puts parsed_json
 			return parsed_json
 		end
 
@@ -351,7 +351,7 @@ class Keystone
 
 			parsed_json = JSON.parse(get_call.body_str)
 
-			puts parsed_json
+		#puts parsed_json
 			return parsed_json
 		end
 
@@ -382,7 +382,7 @@ class Keystone
 			get_call = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/tenants/#{tenant_id}/users/#{user_id}/roles"
 			) do |curl| curl.headers['x-auth-token'] = @token end		
 			parsed_json = JSON.parse(get_call.body_str)		
-			puts parsed_json
+		#puts parsed_json
 			return parsed_json
 		end
 	
@@ -402,7 +402,7 @@ class Keystone
 				curl.headers['Content-Type'] = 'application/json'
 			end									  
 			parsed_json = JSON.parse(post_call.body_str)		
-			puts parsed_json
+		#puts parsed_json
 			return parsed_json
 		end
 
@@ -410,7 +410,7 @@ class Keystone
 		#Endpoint Delete
 		#----------
 		def endpoint_delete(endpoint_id)
-			puts "Tried delete operation"
+		#puts "Tried delete operation"
 			delete_call = Curl::Easy.http_delete("#{@ip_address}:#{@port_2}/v2.0/endpoints/#{endpoint_id}"
 			) do |curl|
 				curl.headers['x-auth-token'] = @token
@@ -421,7 +421,7 @@ class Keystone
 		#Endpoint Get
 		#----------
 		def endpoint_get(endpoint_id)
-			puts "Tried get operation"
+			#puts "Tried get operation"
 			value = endpoint_list["endpoints"]
 			count = 0
 			while count < value.length  do
