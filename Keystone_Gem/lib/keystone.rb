@@ -32,7 +32,7 @@ class Keystone
 		def auth(tenant)
 		
 			if(tenant == "")
-			#puts "Error in function auth: Invalid Tenant Name"
+				puts "Error in function auth: Invalid Tenant Name"
 				
 				return false
 			end
@@ -51,7 +51,7 @@ class Keystone
 				if(parsed_json.to_s.include? 'error')
 					error = parsed_json["error"]["message"]
 					
-				#puts "Error in function auth: Failure to authenticate, reason: " + error.to_s
+					puts "Error in function auth: Failure to authenticate, reason: " + error.to_s
 					return false
 				else
 					@catalog_json = JSON.parse(post_call.body_str)
@@ -61,7 +61,7 @@ class Keystone
 					return true
 				end
 			rescue
-			#puts "Error in function auth: Failure to reach server"
+				puts "Error in function auth: Failure to reach server"
 				return false
 			end
 		end
@@ -209,14 +209,13 @@ class Keystone
 		end
 	end #MISC. OPS
 
-
-	begin #TENANT OPS
+begin #TENANT OPS
 		#------------
 		#Tenant List
 		#------------
 		def tenant_list
 			if @auth == false
-			#puts "You have not authenicated yourself properly!"
+				puts "You have not authenicated yourself properly!"
 				return nil
 			end
 			
@@ -224,7 +223,6 @@ class Keystone
 			) do |curl| curl.headers['x-auth-token'] = @token end
 			
 			parsed_json = JSON.parse(get_call.body_str)
-		#puts JSON.pretty_generate(parsed_json)
 			
 			return parsed_json
 		end
@@ -232,31 +230,38 @@ class Keystone
 		#------------
 		#Tenant Get
 		#------------
-		if @auth == false
-			#puts "You have not authenicated yourself properly!"
+		def tenant_get(tenant_id)
+			if @auth == false
+				puts "You have not authenicated yourself properly!"
 				return nil
 			end
 			
-		def tenant_get(tenant_id)
+			
 			get_call = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/tenants/#{tenant_id}"
 			) do |curl| curl.headers['x-auth-token'] = @token end
 			
 			parsed_json = JSON.parse(get_call.body_str)
-		#puts JSON.pretty_generate(parsed_json)
 			
-			return parsed_json
+			if(parsed_json.to_s.include? 'error')
+				error = parsed_json["error"]["message"]	
+				puts error.to_s
+				return nil
+			else
+				return parsed_json
+			end
 		end
 
 	
 		#--------------
 		#Tenant Create
 		#--------------
-		if @auth == false
-			#puts "You have not authenicated yourself properly!"
+		
+		def tenant_create(name, description)
+			if @auth == false
+				puts "You have not authenicated yourself properly!"
 				return nil
 			end
 			
-		def tenant_create(name, description)
 			tenant = {"tenant" => {"name" => name, "description" => description, "enabled" => true}}
 			json_string = JSON.generate(tenant)
 			post_call = Curl::Easy.http_post("#{@ip_address}:#{@port_2}/v2.0/tenants", json_string
@@ -265,40 +270,72 @@ class Keystone
 				curl.headers['Content-Type'] = 'application/json'
 			end
 			parsed_json = JSON.parse(post_call.body_str)
-		#puts JSON.pretty_generate(parsed_json)
 			
-			return parsed_json
+			if(parsed_json.to_s.include? 'error')
+				error = parsed_json["error"]["message"]
+					
+				puts error.to_s
+				return nil
+			else
+				return parsed_json
+			end
 		end
 
 		#----------
 		#Tenant Update
 		#----------
 		def tenant_update(name, description, id)
-			if(name.length != 0 and description.length != 0 and id.length != 0)
-				tenant = {"tenant" => {"name" => name, "description" => description, "enabled" => true}}
+			if @auth == false
+				puts "You have not authenicated yourself properly!"
+				return nil
 			end
+			
+			tenant = {"tenant" => {"name" => name, "description" => description, "enabled" => true}}
+			
 			json_string = JSON.generate(tenant)
-			post_call = Curl::Easy.http_post("#{@ip_address}:#{@port_2}/tenants/#{id}", json_string
+			post_call = Curl::Easy.http_post("#{@ip_address}:#{@port_2}/v2.0/tenants/#{id}", json_string
 			) do |curl|
 				curl.headers['x-auth-token'] = @token
 				curl.headers['Content-Type'] = 'application/json'
 			end
 			parsed_json = JSON.parse(post_call.body_str)
-		#puts JSON.pretty_generate(parsed_json)
 			
-			return parsed_json
+			if(parsed_json.to_s.include? 'error')
+				error = parsed_json["error"]["message"]
+					
+				puts error.to_s
+				return nil
+			else
+				return parsed_json
+			end
+
 		end
 		
 		#----------
 		#Tenant Delete
 		#----------
 		def tenant_delete(tenant_id)
+			if @auth == false
+				puts "You have not authenicated yourself properly!"
+				return false
+			end
+			
+			begin
 			delete_call = Curl::Easy.http_delete("#{@ip_address}:#{@port_2}/v2.0/tenants/#{tenant_id}"
 			) do |curl|
 				curl.headers['x-auth-token'] = @token
 				curl.headers['userId'] = tenant_id
 			 end
+			 
+			return true
+			
+			rescue
+			
+			return false
+			
+			end
 		end
+		
 	end #TENANT OPS
 
 	begin #ROLE OPS	
