@@ -47,17 +47,16 @@ class TestUser < Test::Unit::TestCase
     #should it fail or return an empty user when the user doesnt exist?
     a = Keystone.new($admin, $adminPass, $serverURL, $serverPort1, $serverPort2)
     a.auth($tenant)
-    newUser = a.user_create("lawdog", "secret", "hur@yahoo", "78f0f0f79cd241a2b6ade773f9ad5cf1")
-    puts newUser
-    assert_equal(newUser,a.user_get(newUser['user']['name']))
+    newUser = a.user_create("lawdizzog", "secret", "hur@yahoo", "78f0f0f79cd241a2b6ade773f9ad5cf1")
+    assert_equal(newUser["user"]["id"],a.user_get(newUser['user']['id'])['user']['id'])
+    a.user_delete(newUser["user"]["id"])
   end
 
   def test_user_get_doesnt_exist
     a = Keystone.new($admin, $adminPass, $serverURL, $serverPort1, $serverPort2)
     a.auth($tenant)
     noUser = a.user_get("0000")
-    #TODO find a way to assert that the answer is equal
-    #TODO to the json object of an empty user
+    assert_equal(noUser["error"]["code"], 404)
   end
 
 
@@ -69,7 +68,7 @@ class TestUser < Test::Unit::TestCase
     a.user_password_update(newUser['user']['name'], "compromised")
     b = Keystone.new("lawdogpasswordupdate", "compromised", $serverURL,$serverPort1,$serverPort2)
     b.auth($tenant)
-    a.user_delete(newUser)
+    a.user_delete(newUser['name'])
   end
 
   def test_user_password_update_unauthorized
