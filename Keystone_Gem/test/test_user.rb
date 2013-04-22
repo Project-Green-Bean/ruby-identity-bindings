@@ -68,13 +68,16 @@ class TestUser < Test::Unit::TestCase
     #if the b user can authenticate with the new password, the value returned from auth should be true, else false
     a = Keystone.new($admin, $adminPass, $serverURL, $serverPort1, $serverPort2)
     a.auth($tenant)
-    newUser = a.user_create("lawdogpasswordupdate", "secret", "lawdog@yahoo", "78f0f0f79cd241a2b6ade773f9ad5cf1")
-    a.user_password_update(newUser['user']['id'], "compromised")
-    b = Keystone.new("lawdogpasswordupdate", "compromised", $serverURL,$serverPort1,$serverPort2)
+    newTenant = a.tenant_create("test_password_update", "for testing purposes")
+    newUser = a.user_create("test_password_update", "password@yahoo", "secret", newTenant['tenant']['id'])
 
-    assert_equal(b.auth($tenant),true)
+    a.user_password_update(newUser['user']['id'], "compromised")
+    b = Keystone.new("test_password_update", "compromised", $serverURL,$serverPort1,$serverPort2)
+
+    assert_equal(b.auth(newTenant['tenant']['name']),true)
 
     a.user_delete(newUser['user']['id'])
+    a.tenant_delete(newTenant['tenant']['id'])
   end
 
   def test_user_password_update_unauthorized
@@ -100,9 +103,7 @@ class TestUser < Test::Unit::TestCase
     #this should not allow a user's password to be changed
     a = Keystone.new($admin, $adminPass, $serverURL, $serverPort1, $serverPort2)
     a.auth($tenant)
-    b.user_password_update("1000000000", "easy")
-    #TODO find way to assert that the answer is equal to the
-    #TODO error message that the user does not exist
+    assert_equal(a.user_password_update("1337", "31337")['error']['code'],404)
   end
 
 end

@@ -78,7 +78,7 @@ class Keystone
 		  		curl.headers['x-auth-token'] = @token
 		  		curl.headers['Content-Type'] = 'application/json'
 			end
-		#puts JSON.parse(get_call.body_str)
+		return JSON.parse(get_call.body_str)
 	  	end
 
 		#----------
