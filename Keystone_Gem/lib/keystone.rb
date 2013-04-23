@@ -7,16 +7,8 @@ require 'json'
 #http://docs.openstack.org/api/openstack-identity-service/2.0/content/
 #http://docs.openstack.org/essex/openstack-compute/starter/content/Keystone_Commands-d1e2734.html
 
-#Error Codes
-#e1 = "Server timed out / wrong server error"
-#e2 = "Invalid username/password"
-#e3 = "Incorrect username / or tenant"
-
 class Keystone
 	
-		#------------
-		#Initialize
-		#------------
 		def initialize(name, password, ip_address, port_1, port_2)
 			@user_name = name
 			@password = password
@@ -26,9 +18,6 @@ class Keystone
 			@auth = false
 		end
 
-		#----------
-		#Auth
-		#----------
 		def auth(tenant)
 		
 			if(tenant == "")
@@ -66,9 +55,7 @@ class Keystone
 			end
 		end
 	begin #USER OPS
-		#----------
-		#User Pass Update
-		#----------
+
 		def user_password_update(user_id, password)
 			script = {"user" => {"id" => user_id,"password" => password}}
 			jsonscript = JSON.generate(script)
@@ -81,9 +68,6 @@ class Keystone
 		return JSON.parse(get_call.body_str)
 	  	end
 
-		#----------
-		#User Get
-		#----------
 		def user_get(user_id)
 			get_call = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/users/#{user_id}"
 			) do |curl|
@@ -99,9 +83,6 @@ class Keystone
 			return parsed_json
 		end
 		
-		#----------
-		#User Create
-		#----------
 		def user_create(username, email, password, tenant_id)
 			user = {"user" => {"name" => username, "email" => email, "enabled" => true, "password" => password, 
 				"tenantId" => tenant_id}}
@@ -116,9 +97,6 @@ class Keystone
 			return parsed_json
 		end
 
-		#----------
-		#User Delete
-		#----------
 		def user_delete(user_id)
 			delete_call = Curl::Easy.http_delete("#{@ip_address}:#{@port_2}/v2.0/users/#{user_id}"
 			) do |curl|
@@ -127,9 +105,6 @@ class Keystone
 			end
 		end 
 
-		#----------
-		#User List
-		#----------
 		def user_list
 			get_call = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/users/"
 			) do |curl| curl.headers['x-auth-token'] = @token end
@@ -140,9 +115,7 @@ class Keystone
 	end #USER OPS
 
   	begin #Service OPS
-		#----------
-		#Service Create
-		#----------
+
 		def service_create(name, service_type, description) #Add service to Service Catalog
 			service = {"OS-KSADM:service" =>
 				{"name" => name,
@@ -159,17 +132,11 @@ class Keystone
 			return parsed_json
 		end
 
-		#----------
-		#Service Delete
-		#----------
 	  	def service_delete(id) #Delete service from Service Catalog
 			delete_call = Curl::Easy.http_delete("#{@ip_address}:#{@port_2}/v2.0/OS-KSADM/services/#{id}"
 			) do |curl|	curl.headers['x-auth-token'] = @token end
 	  	end
 
-		#----------
-		#Service Get
-		#----------
 	  	def service_get(id) #Display service from Service Catalog
 			get_call = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/OS-KSADM/services/#{id}"
 			)do |curl|curl.headers['x-auth-token'] = @token end
@@ -179,9 +146,6 @@ class Keystone
 			return parsed_json
 	  	end
 
-		#----------
-		#Service List
-		#----------
 	  	def service_list() #List all services in Service Catalog
 			get_call = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/OS-KSADM/services"
 			) do |curl| curl.headers['x-auth-token'] = @token end
@@ -193,26 +157,17 @@ class Keystone
   	end #Service OPS
 
 	begin #MISC. OPS
-		#----------
-		#Catalog
-		#----------
 		def catalog
 			return @catalog_json
 		end
 
-	
-		#----------
-		#Token Get
-		#----------
 		def token_get()
 			return @token_json
 		end
 	end #MISC. OPS
 
 begin #TENANT OPS
-		#------------
-		#Tenant List
-		#------------
+
 		def tenant_list
 			if @auth == false
 				puts "You have not authenicated yourself properly!"
@@ -227,9 +182,6 @@ begin #TENANT OPS
 			return parsed_json
 		end
 		
-		#------------
-		#Tenant Get
-		#------------
 		def tenant_get(tenant_id)
 			if @auth == false
 				puts "You have not authenicated yourself properly!"
@@ -251,11 +203,6 @@ begin #TENANT OPS
 			end
 		end
 
-	
-		#--------------
-		#Tenant Create
-		#--------------
-		
 		def tenant_create(name, description)
 			if @auth == false
 				puts "You have not authenicated yourself properly!"
@@ -281,9 +228,7 @@ begin #TENANT OPS
 			end
 		end
 
-		#----------
-		#Tenant Update
-		#----------
+		
 		def tenant_update(name, description, id)
 			if @auth == false
 				puts "You have not authenicated yourself properly!"
@@ -311,9 +256,6 @@ begin #TENANT OPS
 
 		end
 		
-		#----------
-		#Tenant Delete
-		#----------
 		def tenant_delete(tenant_id)
 			if @auth == false
 				puts "You have not authenicated yourself properly!"
@@ -339,9 +281,7 @@ begin #TENANT OPS
 	end #TENANT OPS
 
 	begin #ROLE OPS	
-		#----------
-		#Role Create
-		#----------
+
 		def role_create(name)
 			role = {"role" => {"name" => name}}	
 			json_string = JSON.generate(role)	
@@ -355,9 +295,6 @@ begin #TENANT OPS
 			return parsed_json
 		end
 
-		#----------
-		#Role Delete
-		#----------
 		def role_delete(role)
 			delete_call = Curl::Easy.http_delete("#{@ip_address}:#{@port_2}/v2.0/OS-KSADM/roles/#{role}"
 			) do |curl|
@@ -366,9 +303,6 @@ begin #TENANT OPS
 		#puts "invoked role delete"
 		end
 
-		#----------
-		#Role Get
-		#----------
 		def role_get(role)
 			get_call = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/OS-KSADM/roles/#{role}"
 			) do |curl| curl.headers['x-auth-token'] = @token end
@@ -379,9 +313,6 @@ begin #TENANT OPS
 			return parsed_json
 		end
 
-		#----------
-		#Role List
-		#----------
 		def role_list
 			get_call = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/OS-KSADM/roles"
 			) do |curl| curl.headers['x-auth-token'] = @token end
@@ -392,9 +323,6 @@ begin #TENANT OPS
 			return parsed_json
 		end
 
-		#----------
-		#User Role Add
-		#----------
 		def user_role_add(tenant_id, user_id, role_id)	
 			update_call = Curl::Easy.http_put("#{@ip_address}:#{@port_2}/v2.0/tenants/#{tenant_id}/users/#{user_id}/roles/OS-KSADM/#{role_id}", nil
 			) do |curl|
@@ -402,19 +330,13 @@ begin #TENANT OPS
 			end		
 			return
 		end
-	
-		#----------
-		#User Role Remove
-		#----------
+
 		def user_role_remove(tenant_id, user_id, role_id)
 			delete_call = Curl::Easy.http_delete("#{@ip_address}:#{@port_2}/v2.0/tenants/#{tenant_id}/users/#{user_id}/roles/OS-KSADM/#{role_id}"
 			) do |curl| curl.headers['x-auth-token'] = @token end
 		
 		end
 	
-		#----------
-		#User Role List
-		#----------
 		def user_role_list(tenant_id, user_id)	
 			get_call = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/tenants/#{tenant_id}/users/#{user_id}/roles"
 			) do |curl| curl.headers['x-auth-token'] = @token end		
@@ -426,9 +348,7 @@ begin #TENANT OPS
 	end #ROLE OPS
 
 	begin #ENDPOINT OPS
-		#----------
-		#Endpoint Create
-		#----------
+
 		def endpoint_create(region, service_id, publicurl, adminurl,internalurl)	
 			body = {"endpoint" => {"region" => region, "service_id" => service_id, "publicurl" => publicurl, 
 				"adminurl" => adminurl, "internalurl" => internalurl}}	
@@ -443,9 +363,6 @@ begin #TENANT OPS
 			return parsed_json
 		end
 
-		#----------
-		#Endpoint Delete
-		#----------
 		def endpoint_delete(endpoint_id)
 		#puts "Tried delete operation"
 			delete_call = Curl::Easy.http_delete("#{@ip_address}:#{@port_2}/v2.0/endpoints/#{endpoint_id}"
@@ -454,9 +371,6 @@ begin #TENANT OPS
 			end	
 		end
 
-		#----------
-		#Endpoint Get
-		#----------
 		def endpoint_get(endpoint_id)
 			#puts "Tried get operation"
 			value = endpoint_list["endpoints"]
@@ -470,9 +384,6 @@ begin #TENANT OPS
 			return "No value found"	
 		end
 
-		#----------
-		#Endpoint List
-		#----------
 		def endpoint_list
 			get_call = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/endpoints/"
 			) do |curl| curl.headers['x-auth-token'] = @token end
@@ -486,16 +397,3 @@ begin #TENANT OPS
 	end #ENDPOINT OPS
 end
 
-#c = Keystone.new("admin","password","http://198.61.199.47","5000","35357")
-#c.auth("tenant1")
-
-#tenant: test01 id = "d94e78ff7fb04a058`ca63b547fe09c89"
-#d = Keystone.new("test01u","password",,"http://198.61.199.47","5000","35357")
-
-#c.user_list
-#c.tenant_list
-
-#c.user_role_add("14c7cb7d417b4f0fabd3c24f3cd41386", "71053653d11044ce9ae269a958c6e9ec", "9d0676f1dd80425ca4c82ef2b944d59f")
-#c.user_role_list("14c7cb7d417b4f0fabd3c24f3cd41386", "71053653d11044ce9ae269a958c6e9ec")
-#c.user_role_remove("14c7cb7d417b4f0fabd3c24f3cd41386", "71053653d11044ce9ae269a958c6e9ec", "9d0676f1dd80425ca4c82ef2b944d59f")
-#c.user_role_list("14c7cb7d417b4f0fabd3c24f3cd41386", "71053653d11044ce9ae269a958c6e9ec")
