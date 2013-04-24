@@ -13,33 +13,69 @@ class TestUser < Test::Unit::TestCase
     newTenant = c.tenant_create('test_user_list', 'mock tenant')
     newUser= c.user_create('test_user_list','test_user_list@com.com','secret', newTenant['tenant']['id'])
     withNewUser = c.user_list
+
     assert(true, withoutNewUser==withNewUser) #makes sure that the list does in fact change
+
     c.user_delete(newUser['user']['id'])
     c.tenant_delete(newTenant['tenant']['id'])
   end
 
   def test_user_create
     #this should allow creation of users under regular circumstances
+    c = Keystone.new($admin, $adminPass, $serverURL, $serverPort1, $serverPort2)
+    c.auth($tenant)
+    withoutNew = c.user_list['users']
+    newTenant = c.tenant_create("test_user_create", "")
+    newUser = c.user_create("test_user_create", "email", "password", newTenant['tenant']['id'])
+    withNew = c.user_list['users']
+
+    difference = withNew.size - withoutNew.size
+    assert_equal(1, difference)
+
+    c.user_delete(newUser['user']['id'])
+    c.tenant_delete(newTenant['tenant']['id'])
   end
 
   def test_user_create_unauthorized
     #this should not allow creation of users
+    c = Keystone.new($admin, $adminPass, $serverURL, $serverPort1, $serverPort2)
+    c.auth($tenant)
   end
 
-  def test_user_create_incorrect_tenant
+  def test_user_create_invalid_tenant
     #this should not allow creation of users
+    c = Keystone.new($admin, $adminPass, $serverURL, $serverPort1, $serverPort2)
+    c.auth($tenant)
+
+    newUser = c.user_create("test_user_create_invalid_tenant", "email", "password", "TheOddsOfHavingThisTenantIDIsVeryUnlikely")
+    assert_equal(404, newUser['error']['code'])
+
   end
 
   def test_user_delete
     #this should allow deletion under regular circumstances
+    c = Keystone.new($admin, $adminPass, $serverURL, $serverPort1, $serverPort2)
+    c.auth($tenant)
+
+
+    newTenant = c.tenant_create("test_user_delete", "")
+    newUser = c.user_create("test_user_delete", "email", "password", newTenant['tenant']['id'])
+    with
+
   end
 
   def test_user_delete_unauthorized
     #this should not allow deletion of users
+    c = Keystone.new($admin, $adminPass, $serverURL, $serverPort1, $serverPort2)
+    c.auth($tenant)
+
   end
 
   def test_user_delete_user_doesnt_exist
     #this should not allow deletion of users
+    c = Keystone.new($admin, $adminPass, $serverURL, $serverPort1, $serverPort2)
+    c.auth($tenant)
+    assert_equal(false, c.user_delete("TheOddsOfHavingThisUserIDIsVeryUnlikely"))
   end
 
   def test_user_get
