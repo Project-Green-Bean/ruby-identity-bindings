@@ -98,11 +98,16 @@ class Keystone
 		end
 
 		def user_delete(user_id)
-			delete_call = Curl::Easy.http_delete("#{@ip_address}:#{@port_2}/v2.0/users/#{user_id}"
-			) do |curl|
-				curl.headers['x-auth-token'] = @token
-				curl.headers['userId'] = user_id
-			end
+
+      if not user_get(user_id).has_key?('error')
+        delete_call = Curl::Easy.http_delete("#{@ip_address}:#{@port_2}/v2.0/users/#{user_id}"
+        ) do |curl|
+          curl.headers['x-auth-token'] = @token
+          curl.headers['userId'] = user_id
+        end
+        return true
+      end
+      return false
 		end 
 
 		def user_list

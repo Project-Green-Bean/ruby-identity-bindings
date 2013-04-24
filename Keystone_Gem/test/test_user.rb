@@ -10,12 +10,12 @@ class TestUser < Test::Unit::TestCase
     c = Keystone.new($admin, $adminPass, $serverURL, $serverPort1, $serverPort2)
     c.auth($tenant)
     withoutNewUser = c.user_list
-    userID= c.user_create('lawdog','lawdog@com.com','secret', '78f0f0f79cd241a2b6ade773f9ad5cf1')
-    #TODO Replace that tenant ID with a valid mock one and then delete it
+    newTenant = c.tenant_create('test_user_list', 'mock tenant')
+    newUser= c.user_create('test_user_list','test_user_list@com.com','secret', newTenant['tenant']['id'])
     withNewUser = c.user_list
-    assert_not_equal(withoutNewUser,withNewUser) #makes sure that the list does in fact change
-    c.user_delete(userID["users"]["tenantID"])
-    assert_equal(withoutNewUser, c.user_list)
+    assert(true, withoutNewUser==withNewUser) #makes sure that the list does in fact change
+    c.user_delete(newUser['user']['id'])
+    c.tenant_delete(newTenant['tenant']['id'])
   end
 
   def test_user_create
@@ -47,11 +47,13 @@ class TestUser < Test::Unit::TestCase
     #should it fail or return an empty user when the user doesnt exist?
     a = Keystone.new($admin, $adminPass, $serverURL, $serverPort1, $serverPort2)
     a.auth($tenant)
-    newUser = a.user_create("lawdizzog", "secret", "hur@yahoo", "78f0f0f79cd241a2b6ade773f9ad5cf1")
+    newTenant = a.tenant_create("user_get_tenant", "for testing purposes")
+    newUser = a.user_create("user_get", "secret", "user_get_email", newTenant['tenant']['id'])
 
     assert_equal(newUser["user"]["id"],a.user_get(newUser['user']['id'])['user']['id'])
 
     a.user_delete(newUser["user"]["id"])
+    a.tenant_delete(newTenant['tenant']['id'])
   end
 
   def test_user_get_doesnt_exist
@@ -108,4 +110,3 @@ class TestUser < Test::Unit::TestCase
 
 end
 
-#
