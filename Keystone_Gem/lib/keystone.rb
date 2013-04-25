@@ -60,6 +60,10 @@ class Keystone
   begin #USER OPS
 
     def user_password_update(user_id, password)
+		if @auth == false
+			puts "You are not authorized to execute this function"
+			return nil
+		  end
       script     = {"user" => {"id" => user_id, "password" => password}}
       jsonscript = JSON.generate(script)
       get_call   = Curl::Easy.http_put("#{@ip_address}:#{@port_2}/v2.0/users/#{user_id}/OS-KSADM/password", jsonscript
@@ -71,6 +75,11 @@ class Keystone
     end
 
     def user_get(user_id)
+		if @auth == false
+			puts "You are not authorized to execute this function"
+			return nil
+		end
+	
       get_call    = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/users/#{user_id}"
       ) do |curl|
         curl.headers['x-auth-token'] = @token
@@ -86,6 +95,11 @@ class Keystone
     end
 
     def user_create(username, email, password, tenant_id)
+		if @auth == false
+			puts "You are not authorized to execute this function"
+			return nil
+		end
+
       user        = {"user" => {"name"     => username, "email" => email, "enabled" => true, "password" => password,
                                 "tenantId" => tenant_id}}
       json_string = JSON.generate(user)
@@ -100,6 +114,10 @@ class Keystone
     end
 
     def user_delete(user_id)
+		if @auth == false
+			puts "You are not authorized to execute this function"
+			return nil
+		end
 
       if not user_get(user_id).has_key?('error')
         delete_call = Curl::Easy.http_delete("#{@ip_address}:#{@port_2}/v2.0/users/#{user_id}"
@@ -113,6 +131,11 @@ class Keystone
     end
 
     def user_list
+		if @auth == false
+			puts "You are not authorized to execute this function"
+			return nil
+		end
+
       get_call    = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/users/"
       ) do |curl|
         curl.headers['x-auth-token'] = @token
@@ -173,10 +196,20 @@ class Keystone
 
   begin #MISC. OPS
     def catalog
+		if @auth == false
+			puts "You are not authorized to execute this function"
+		return nil
+		end
+
       return @catalog_json
     end
 
     def token_get()
+	if @auth == false
+		puts "You are not authorized to execute this function"
+		return nil
+	end
+		  
       return @token_json
     end
   end #MISC. OPS
@@ -397,7 +430,7 @@ class Keystone
 	if @auth == false
         puts "You are not authorized to execute this function"
         return nil
-      end
+     end
 	  
 		begin
 		  delete_call = Curl::Easy.http_delete("#{@ip_address}:#{@port_2}/v2.0/endpoints/#{endpoint_id}"
@@ -413,10 +446,10 @@ class Keystone
     end
 
     def endpoint_get(endpoint_id)
-		if @auth == false
-			puts "You are not authorized to execute this function"
-			return nil
-		end
+	if @auth == false
+		puts "You are not authorized to execute this function"
+		return nil
+	end
       value = endpoint_list["endpoints"]
       count = 0
       while count < value.length do
