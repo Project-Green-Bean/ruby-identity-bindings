@@ -143,20 +143,19 @@ class Keystone
         curl.headers['Content-Type'] = 'application/json'
       end
       parsed_json = JSON.parse(post_call.body_str)
-      return parsed_json
+      return [parsed_json, "Service Created Successfully"]
     end
 
-	def service_delete(id)
+   def service_delete(id)
 
-		if not service_get(id).has_key?('error')
-			delete_call = Curl::Easy.http_delete("#{@ip_address}:#{@port_2}/v2.0/OS-KSADM/services/#{id}"
-			) do |curl|
-			curl.headers['x-auth-token'] = @token
-			end
-			return true
-		else
-			return false
-		end
+     if not service_get(id).has_key?('error')
+	delete_call = Curl::Easy.http_delete("#{@ip_address}:#{@port_2}/v2.0/OS-KSADM/services/#{id}"
+	) do |curl|
+	curl.headers['x-auth-token'] = @token end
+	return [true, "Service Deleted Successfully"]
+     else
+	return [false, "Service Deleted Unsuccessfully"]
+     end
     end
 
     def service_get(id)
@@ -166,7 +165,13 @@ class Keystone
         curl.headers['x-auth-token'] = @token
       end
       parsed_json = JSON.parse(get_call.body_str)
-      return parsed_json
+      if (parsed_json.to_s.include? 'error')
+	error = parsed_json["error"]["message"]
+	e = error.to_s
+	return [nil, e]
+      else
+	return [parsed_json, "Service Get Successful"]
+      end
     end
 
     def service_list()
@@ -176,7 +181,7 @@ class Keystone
         curl.headers['x-auth-token'] = @token
       end
       parsed_json = JSON.parse(get_call.body_str)
-      return parsed_json
+      return [parsed_json, "Service List Successful"]
     end
   end #Service OPS
 
