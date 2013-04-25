@@ -95,7 +95,7 @@ class Keystone
         curl.headers['Content-Type'] = 'application/json'
       end
       parsed_json = JSON.parse(post_call.body_str)
-      #puts parsed_json
+
       return parsed_json
     end
 
@@ -118,7 +118,7 @@ class Keystone
         curl.headers['x-auth-token'] = @token
       end
       parsed_json = JSON.parse(get_call.body_str)
-      #puts JSON.pretty_generate(parsed_json)
+
       return parsed_json
     end
   end #USER OPS
@@ -137,7 +137,7 @@ class Keystone
         curl.headers['Content-Type'] = 'application/json'
       end
       parsed_json = JSON.parse(post_call.body_str)
-      #puts parsed_json
+
       return parsed_json
     end
 
@@ -153,9 +153,9 @@ class Keystone
       ) do |curl|
         curl.headers['x-auth-token'] = @token
       end
-      #puts "invoking service-get..."
+
       parsed_json = JSON.parse(get_call.body_str)
-      #puts parsed_json
+
       return parsed_json
     end
 
@@ -164,9 +164,9 @@ class Keystone
       ) do |curl|
         curl.headers['x-auth-token'] = @token
       end
-      #puts "invoking service-list..."
+
       parsed_json = JSON.parse(get_call.body_str)
-      #puts parsed_json
+
       return parsed_json
     end
   end #Service OPS
@@ -310,7 +310,7 @@ class Keystone
         curl.headers['Content-Type'] = 'application/json'
       end
       parsed_json = JSON.parse(post_call.body_str)
-      #puts parsed_json
+
       return parsed_json
     end
 
@@ -319,7 +319,7 @@ class Keystone
       ) do |curl|
         curl.headers['x-auth-token'] = @token
       end
-      #puts "invoked role delete"
+
     end
 
     def role_get(role)
@@ -330,7 +330,6 @@ class Keystone
 
       parsed_json = JSON.parse(get_call.body_str)
 
-      #puts parsed_json
       return parsed_json
     end
 
@@ -342,7 +341,6 @@ class Keystone
 
       parsed_json = JSON.parse(get_call.body_str)
 
-      #puts parsed_json
       return parsed_json
     end
 
@@ -368,7 +366,7 @@ class Keystone
         curl.headers['x-auth-token'] = @token
       end
       parsed_json = JSON.parse(get_call.body_str)
-      #puts parsed_json
+
       return parsed_json
     end
 
@@ -386,12 +384,12 @@ class Keystone
         curl.headers['Content-Type'] = 'application/json'
       end
       parsed_json = JSON.parse(post_call.body_str)
-      #puts parsed_json
+
       return parsed_json
     end
 
     def endpoint_delete(endpoint_id)
-      #puts "Tried delete operation"
+
       delete_call = Curl::Easy.http_delete("#{@ip_address}:#{@port_2}/v2.0/endpoints/#{endpoint_id}"
       ) do |curl|
         curl.headers['x-auth-token'] = @token
@@ -399,7 +397,7 @@ class Keystone
     end
 
     def endpoint_get(endpoint_id)
-      #puts "Tried get operation"
+
       value = endpoint_list["endpoints"]
       count = 0
       while count < value.length do
@@ -417,10 +415,8 @@ class Keystone
         curl.headers['x-auth-token'] = @token
       end
 
-      #puts "Here is a list of endpoints..."
       parsed_json = JSON.parse(get_call.body_str)
 
-      #puts parsed_json
       return parsed_json
     end
   end #ENDPOINT OPS
