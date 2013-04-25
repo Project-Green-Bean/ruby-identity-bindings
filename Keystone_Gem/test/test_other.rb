@@ -1,6 +1,6 @@
 require File.join(File.dirname(__FILE__), '../lib/keystone.rb')
 require 'test/unit'
-require 'test_parameters.rb'
+require File.join(File.dirname(__FILE__), '../test/test_parameters.rb')
 
 #testing catalog and token_get
 
