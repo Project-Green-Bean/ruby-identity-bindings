@@ -126,6 +126,30 @@ class Keystone
 
       return parsed_json
     end
+    
+   #--------------------------------------------------------------------------------------------------
+   # user_update          
+   # Update user's email
+   # -------------------------------------------------------------------------------------------------
+    def user_update(email, user_id)
+      updateUser = {"user" => {"id" = user_id, "email" => email}}
+      jsonscript = JSON.generate(updateUser)
+      get_call   = Curl::Easy.http_put("#{@ip_address}:#{@port_2}/v2.0/users/#{user_id}/OS-KSADM/email", jsonscript
+      ) do |curl|
+        curl.headers['x-auth-token'] = @token
+        curl.headers['Content-Type'] = 'application/json'
+      end
+      
+      if (parsed_json.to_s.include? 'error')
+        error = parsed_json["error"]["message"]
+        puts error.to_s
+        return nil
+      else
+        return parsed_json
+      end
+
+    end
+    
   end #USER OPS
 
   begin #SERVICE OPS
