@@ -21,9 +21,9 @@ class Keystone
   def auth(tenant)
 
     if (tenant == "")
-      puts "Error in function auth: Invalid Tenant Name"
+      e1 = "Error in function auth: Invalid Tenant Name"
 
-      return false
+      return [false, e1]
     end
 
     auth = {"auth" => {"passwordCredentials" => {"username" => @user_name, "password" => @password},
@@ -42,18 +42,18 @@ class Keystone
       if (parsed_json.to_s.include? 'error')
         error = parsed_json["error"]["message"]
 
-        puts "Error in function auth: Failure to authenticate, reason: " + error.to_s
-        return false
+        e2 = "Error in function auth: Failure to authenticate, reason: " + error.to_s
+        return [false, e2]
       else
         @catalog_json = JSON.parse(post_call.body_str)
         @token_json   = @catalog_json["access"]["token"]
         @token        = @token_json["id"]
         @auth         = true
-        return true
+        return [true, "Successful Authentication"]
       end
     rescue
-      puts "Error in function auth: Failure to reach server"
-      return false
+      e3 = "Error in function auth: Failure to reach server"
+      return [false, e3]
     end
   end
 
@@ -200,7 +200,7 @@ class Keystone
 
       parsed_json = JSON.parse(get_call.body_str)
 
-      return parsed_json
+      return [parsed_json, "Successfully returned tenant_list"]
     end
 
     def tenant_get(tenant_id)
@@ -214,10 +214,10 @@ class Keystone
 
       if (parsed_json.to_s.include? 'error')
         error = parsed_json["error"]["message"]
-        puts error.to_s
-        return nil
+        e = error.to_s
+        return [nil, e]
       else
-        return parsed_json
+        return [parsed_json, "Successfully exectued tenant_get"]
       end
     end
 
@@ -235,10 +235,10 @@ class Keystone
       if (parsed_json.to_s.include? 'error')
         error = parsed_json["error"]["message"]
 
-        puts error.to_s
-        return nil
+        e = error.to_s
+        return [nil, e]
       else
-        return parsed_json
+        return [parsed_json, "Successfully created tenant #{name}"]
       end
     end
 
@@ -258,10 +258,10 @@ class Keystone
       if (parsed_json.to_s.include? 'error')
         error = parsed_json["error"]["message"]
 
-        puts error.to_s
-        return nil
+         e = error.to_s
+        return [nil, e]
       else
-        return parsed_json
+        return [parsed_json, "Successfully updated tenant #{name}"]
       end
 
     end
@@ -275,11 +275,11 @@ class Keystone
           curl.headers['userId']       = tenant_id
         end
 
-        return true
+        return [true, "Tenant Deleted Successfully"]
 
       rescue
 
-        return false
+        return [false, "Tenant failed to Delete"]
 
       end
     end
@@ -288,7 +288,6 @@ class Keystone
 
  begin #ROLE OPS	
 		def role_create(name)
-
 			role = {"role" => {"name" => name}}	
 			json_string = JSON.generate(role)	
 			post_call = Curl::Easy.http_post("#{@ip_address}:#{@port_2}/v2.0/OS-KSADM/roles", json_string
@@ -297,37 +296,40 @@ class Keystone
 				curl.headers['Content-Type'] = 'application/json'
 			end
 			parsed_json = JSON.parse(post_call.body_str)
-			return parsed_json
+			return [parsed_json, "Success"]
 		end
 
 		def role_delete(role)
-
 			a = role_list
 			if(a.to_s.include? role) 
 				delete_call = Curl::Easy.http_delete("#{@ip_address}:#{@port_2}/v2.0/OS-KSADM/roles/#{role}"
 				) do |curl|
 					curl.headers['x-auth-token'] = @token
 				end
-				return true
+				return [true, "Tenant Deleted Successfully"]
 			else
-				return false
+				return [false, "Tenant failed to Delete"]
 			end
 		end
 
 		def role_get(role)
-
 			get_call = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/OS-KSADM/roles/#{role}"
 			) do |curl| curl.headers['x-auth-token'] = @token end
 			parsed_json = JSON.parse(get_call.body_str)
-			return parsed_json
+			if (parsed_json.to_s.include? 'error')
+				error = parsed_json["error"]["message"]
+				e = error.to_s
+				return [nil, e]
+		    else
+				return [parsed_json, "Success"]
+			end
 		end
 
 		def role_list
-
 			get_call = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/OS-KSADM/roles"
 			) do |curl| curl.headers['x-auth-token'] = @token end
 			parsed_json = JSON.parse(get_call.body_str)
-			return parsed_json
+			return [parsed_json, "Success"]
 		end	
 	end #ROLE OPS
 

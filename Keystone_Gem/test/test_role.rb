@@ -15,12 +15,12 @@ class TestRole < Test::Unit::TestCase
 	begin #role_list
 		def test_role_list	
 			expected = $aut.role_list
-			assert(expected.has_key? 'roles')
+			assert(expected[0].has_key? 'roles')
 		end
 		
 		def test_role_list_fail_to_authenticate
-			expected = $fai.role_list
-			assert(expected == nil)
+			expected = $fai.role_list[0]
+			assert(expected.has_key?("error"))
 		end
 
 	end #role_list
@@ -31,30 +31,26 @@ class TestRole < Test::Unit::TestCase
 			cnt = 0
 			begin
 				expected = $aut.role_create("testName".concat((cnt = cnt+1).to_s))
-			end while(expected.has_key?("error"))
-			expected = expected["role"]["id"]
-			$aut.role_get(expected)
-			$aut.role_delete(expected)
-			expected = $aut.role_get(expected)
-			assert(expected.has_key?("error"))
+				
+			end while(expected[0].has_key?("error"))
+			id = expected[0]["role"]["id"]
+			$aut.role_get(id)
+			$aut.role_delete(id)
+			assert(expected[0].has_key?("role"))
 		end	
 		
 		def test_role_create_fail_to_authenticate	
-			cnt = 0
-			begin
-				expected = $aut.role_create("testName".concat((cnt = cnt+1).to_s))
-			end while(expected.has_key?("error"))
-			expected = $fai.role_create(expected)			
-			assert(expected == nil)
+			expected = $fai.role_create("testing")[0]		
+			assert(expected.has_key?("error"))
 		end
 		
 		def test_role_create_already_exists 
 			cnt = 0
 			begin
 				b = "testName".concat((cnt = cnt+1).to_s)
-				c = $aut.role_create(b)
+				c = $aut.role_create(b)[0]
 			end while(c.has_key?("error"))
-			expected = $aut.role_create(b)
+			expected = $aut.role_create(b)[0]
 			$aut.role_delete(c["role"]["id"])
 			assert(expected.has_key?("error"))
 		end
@@ -68,21 +64,21 @@ class TestRole < Test::Unit::TestCase
 			cnt = 0
 			begin
 				b = "testName".concat((cnt = cnt+1).to_s)
-				c = $aut.role_create(b)
+				c = $aut.role_create(b)[0]
 			end while(c.has_key?("error"))
 			d = c["role"]["id"]
-			expected = $aut.role_get(d)["role"]["id"]
+			expected = $aut.role_get(d)[0]["role"]["id"]
 			assert_equal(expected, d)
 		end
 		
 		def test_role_get_fail_to_authenticate
-			expected = $fai.role_get($existingID)
+			expected = $fai.role_get("testing")[0]
 			assert(expected == nil)
 		end
 		
 		def test_role_get_does_not_exist
-			expected = $aut.role_get("thisShouldNotExist")
-			assert(expected.has_key?("error"))
+			expected = $aut.role_get("thisShouldNotExist")[0]
+			assert(expected == nil)
 		end
 
 	end #role_get
@@ -92,28 +88,27 @@ class TestRole < Test::Unit::TestCase
 		def test_role_delete
 			cnt = 0
 			begin
-				expected = $aut.role_create("testName".concat((cnt = cnt+1).to_s))
+				expected = $aut.role_create("testName".concat((cnt = cnt+1).to_s))[0]
 			end while(expected.has_key?("error"))
 			expected = expected["role"]["id"]
 			$aut.role_get(expected)
-			$aut.role_delete(expected)
-			expected = $aut.role_get(expected)
-			assert(expected.has_key?("error"))
+			expected = $aut.role_delete(expected)[0]
+			assert(expected == true)
 		end	
 		
 		def test_role_delete_fail_to_authenticate
 			cnt = 0
 			begin
-				expected = $aut.role_create("testName".concat((cnt = cnt+1).to_s))
+				expected = $aut.role_create("testName".concat((cnt = cnt+1).to_s))[0]
 			end while(expected.has_key?("error"))
 			real = expected["role"]["id"]
-			expected = $fai.role_delete(real)
+			expected = $fai.role_delete(real)[0]
 			$aut.role_delete(real)
-			assert(expected == nil)
+			assert(expected == false)
 		end
 		
 		def test_role_delete_does_not_exist
-			expected = $aut.role_delete("321321321RandomID")
+			expected = $aut.role_delete("321321321RandomID")[0]
 			assert(expected == false)
 		end
 
