@@ -1,5 +1,5 @@
 require File.join(File.dirname(__FILE__), '../lib/keystone.rb')
-require "/home/thicks/Desktop/Senior Software/Keystone_Gem/test/test_parameters.rb"
+require File.join(File.dirname(__FILE__), '../test/test_parameters.rb')
 require 'test/unit'
 require 'rubygems'
 #testing the role functions
@@ -31,7 +31,7 @@ class TestRole < Test::Unit::TestCase
 		def test_role_create
 			cnt = 0
 			begin
-				expected = $aut.role_create($randomName.concat((cnt = cnt+1).to_s))
+				expected = $aut.role_create("testName".concat((cnt = cnt+1).to_s))
 			end while(expected.has_key?("error"))
 			expected = expected["role"]["id"]
 			$aut.role_get(expected)
@@ -40,13 +40,19 @@ class TestRole < Test::Unit::TestCase
 			assert(expected.has_key?("error"))
 		end	
 		
-		def test_role_create_fail_to_authenticate
-			expected = $fai.role_create($randomName)
+		def test_role_create_fail_to_authenticate			
+			expected = $fai.role_create(b)			
 			assert(expected.has_key?("error"))
 		end
 		
 		def test_role_create_already_exists 
-			expected = $aut.role_create($existingName)
+			cnt = 0
+			begin
+				b = "testName".concat((cnt = cnt+1).to_s
+				c = $aut.role_create(b)
+			end while(expected.has_key?("error"))
+			expected = $aut.role_create(b)
+			$aut.role_delete(c["role"]["id"])
 			assert(expected.has_key?("error"))
 		end
 
@@ -56,8 +62,14 @@ class TestRole < Test::Unit::TestCase
 	begin #role_get
 
 		def test_role_get	
-			expected = $aut.role_get($existingID)["role"]["id"]
-			assert_equal(expected, $existingID)
+			cnt = 0
+			begin
+				b = "testName".concat((cnt = cnt+1).to_s
+				c = $aut.role_create(b)
+			end while(expected.has_key?("error"))
+			d = c["role"]["id"]
+			expected = $aut.role_get(d)["role"]["id"]
+			assert_equal(expected, d)
 		end
 		
 		def test_role_get_fail_to_authenticate
@@ -66,7 +78,7 @@ class TestRole < Test::Unit::TestCase
 		end
 		
 		def test_role_get_does_not_exist
-			expected = $aut.role_get($randomName)
+			expected = $aut.role_get("thisShouldNotExist")
 			assert(expected.has_key?("error"))
 		end
 
@@ -77,7 +89,7 @@ class TestRole < Test::Unit::TestCase
 		def test_role_delete
 			cnt = 0
 			begin
-				expected = $aut.role_create($randomName.concat((cnt = cnt+1).to_s))
+				expected = $aut.role_create("testName".concat((cnt = cnt+1).to_s))
 			end while(expected.has_key?("error"))
 			expected = expected["role"]["id"]
 			$aut.role_get(expected)
@@ -87,14 +99,18 @@ class TestRole < Test::Unit::TestCase
 		end	
 		
 		def test_role_delete_fail_to_authenticate
-			real = $aut.role_create($randomName)["role"]["id"]
-			expected = $fai.role_delete($randomID)
+			cnt = 0
+			begin
+				expected = $aut.role_create("testName".concat((cnt = cnt+1).to_s))
+			end while(expected.has_key?("error"))
+			real = expected["role"]["id"]
+			expected = $fai.role_delete(real)
 			$aut.role_delete(real)
 			assert(expected == false)
 		end
 		
 		def test_role_delete_does_not_exist
-			expected = $aut.role_delete($randomID)
+			expected = $aut.role_delete("321321321RandomID")
 			assert(expected == false)
 		end
 
