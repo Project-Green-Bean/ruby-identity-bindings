@@ -152,21 +152,22 @@ class TestUser < Test::Unit::TestCase
     a = Keystone.new($admin, $adminPass, $serverURL, $serverPort1, $serverPort2)
     a.auth($tenant)
     newTenant = a.tenant_create("test_user_update", "testing user update")
-    newUser = a.user_create("test","test email 1", "password",newTenant['tenant']['id'])
+    tenantID = newTenant[0]['tenant']['id']
+    newUser = a.user_create("test","test email 1", "password",tenantID)
     userID = newUser['user']['id']
     oldUserInfo = newUser['user']['email']
     a.user_update("email 2",userID)
     newUserInfo = newUser['user']['email']
     assert(false, oldUserInfo == newUserInfo)
     a.user_delete(userID)
-    a.tenant_delete(newTenant['tenant']['id'])
+    a.tenant_delete(tenantID)
   end
 		
   def test_user_update_error
     # This should not be allowed
     a = Keystone.new($admin, $adminPass, $serverURL, $serverPort1, $serverPort2)
     a.auth($tenant)
-    errorFail = a.user_update("failed","failed","randomidlolno")
+    errorFail = a.user_update("failed","failed","randomIDlolno")
     assert(errorFail == nil)
   end
   
