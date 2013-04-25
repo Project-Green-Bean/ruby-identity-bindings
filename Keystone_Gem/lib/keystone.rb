@@ -147,9 +147,13 @@ class Keystone
     end
   end #USER OPS
 
-  begin #Service OPS
+  begin #SERVICE OPS
 
-    def service_create(name, service_type, description) #Add service to Service Catalog
+    def service_create(name, service_type, description)
+	  if @auth == false
+		puts "You are not authorized to execute this function"
+		return nil
+	  end
       service     = {"OS-KSADM:service" =>
                          {"name"        => name,
                           "type"        => service_type,
@@ -161,36 +165,48 @@ class Keystone
         curl.headers['Content-Type'] = 'application/json'
       end
       parsed_json = JSON.parse(post_call.body_str)
-
       return parsed_json
     end
 
-    def service_delete(id) #Delete service from Service Catalog
-      delete_call = Curl::Easy.http_delete("#{@ip_address}:#{@port_2}/v2.0/OS-KSADM/services/#{id}"
-      ) do |curl|
-        curl.headers['x-auth-token'] = @token
+	def service_delete(id)
+	  if @auth == false
+        puts "You are not authorized to execute this function"
+        return nil
       end
+		if not service_get(id).has_key?('error')
+			delete_call = Curl::Easy.http_delete("#{@ip_address}:#{@port_2}/v2.0/OS-KSADM/services/#{id}"
+			) do |curl|
+			curl.headers['x-auth-token'] = @token
+			end
+			return true
+		else
+			return false
+		end
     end
 
-    def service_get(id) #Display service from Service Catalog
+    def service_get(id)
+	  if @auth == false
+		puts "You are not authorized to execute this function"
+		return nil
+	  end
       get_call    = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/OS-KSADM/services/#{id}"
       ) do |curl|
         curl.headers['x-auth-token'] = @token
       end
-
       parsed_json = JSON.parse(get_call.body_str)
-
       return parsed_json
     end
 
-    def service_list() #List all services in Service Catalog
+    def service_list()
+	  if @auth == false
+        puts "You are not authorized to execute this function"
+        return nil
+      end
       get_call    = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/OS-KSADM/services"
       ) do |curl|
         curl.headers['x-auth-token'] = @token
       end
-
       parsed_json = JSON.parse(get_call.body_str)
-
       return parsed_json
     end
   end #Service OPS
@@ -332,52 +348,64 @@ class Keystone
 
   end #TENANT OPS
 
-  begin #ROLE OPS
+ begin #ROLE OPS	
+		def role_create(name)
+		if @auth == false
+			puts "You are not authorized to execute this function"
+			return nil
+		end
+			role = {"role" => {"name" => name}}	
+			json_string = JSON.generate(role)	
+			post_call = Curl::Easy.http_post("#{@ip_address}:#{@port_2}/v2.0/OS-KSADM/roles", json_string
+			) do |curl|
+				curl.headers['x-auth-token'] = @token
+				curl.headers['Content-Type'] = 'application/json'
+			end
+			parsed_json = JSON.parse(post_call.body_str)
+			return parsed_json
+		end
 
-    def role_create(name)
+		def role_delete(role)
+		if @auth == false
+			puts "You are not authorized to execute this function"
+			return nil
+		end
+			a = role_list
+			if(a.to_s.include? role) 
+				delete_call = Curl::Easy.http_delete("#{@ip_address}:#{@port_2}/v2.0/OS-KSADM/roles/#{role}"
+				) do |curl|
+					curl.headers['x-auth-token'] = @token
+				end
+				return true
+			else
+				return false
+			end
+		end
+
+		def role_get(role)
+		if @auth == false
+			puts "You are not authorized to execute this function"
+			return nil
+		end
+			get_call = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/OS-KSADM/roles/#{role}"
+			) do |curl| curl.headers['x-auth-token'] = @token end
+			parsed_json = JSON.parse(get_call.body_str)
+			return parsed_json
+		end
+
+		def role_list
+		if @auth == false
+			puts "You are not authorized to execute this function"
+			return nil
+		end
+			get_call = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/OS-KSADM/roles"
+			) do |curl| curl.headers['x-auth-token'] = @token end
+			parsed_json = JSON.parse(get_call.body_str)
+			return parsed_json
+		end	
+	end #ROLE OPS
+
 	
-      role        = {"role" => {"name" => name}}
-      json_string = JSON.generate(role)
-      post_call   = Curl::Easy.http_post("#{@ip_address}:#{@port_2}/v2.0/OS-KSADM/roles", json_string
-      ) do |curl|
-        curl.headers['x-auth-token'] = @token
-        curl.headers['Content-Type'] = 'application/json'
-      end
-      parsed_json = JSON.parse(post_call.body_str)
-
-      return parsed_json
-    end
-
-    def role_delete(role)
-      delete_call = Curl::Easy.http_delete("#{@ip_address}:#{@port_2}/v2.0/OS-KSADM/roles/#{role}"
-      ) do |curl|
-        curl.headers['x-auth-token'] = @token
-      end
-
-    end
-
-    def role_get(role)
-      get_call = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/OS-KSADM/roles/#{role}"
-      ) do |curl|
-        curl.headers['x-auth-token'] = @token
-      end
-
-      parsed_json = JSON.parse(get_call.body_str)
-
-      return parsed_json
-    end
-
-    def role_list
-      get_call = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/OS-KSADM/roles"
-      ) do |curl|
-        curl.headers['x-auth-token'] = @token
-      end
-
-      parsed_json = JSON.parse(get_call.body_str)
-
-      return parsed_json
-    end
-
     def user_role_add(tenant_id, user_id, role_id)
       update_call = Curl::Easy.http_put("#{@ip_address}:#{@port_2}/v2.0/tenants/#{tenant_id}/users/#{user_id}/roles/OS-KSADM/#{role_id}", nil
       ) do |curl|
@@ -404,7 +432,6 @@ class Keystone
       return parsed_json
     end
 
-  end #ROLE OPS
 
   begin #ENDPOINT OPS
 
