@@ -17,78 +17,87 @@ xml : lang="en" lang="en">
 
 <head>
   <title>Senior Software: Rackspace Ruby Group: Tenants Page</title>
-  <link rel="stylesheet" type="text/css" href="/css/SS.css" />
+  <link rel="stylesheet" type="text/css" href="/css/ss-style.css" />
   <script type="text/javascript" src="js/modernizr-1.5.min.js"></script>
 </head>
 
 	<body>
 		<div id="main">
-			<header>
 				<div id="logo">
 					<div id="logo_text">
 						<h1><a href="SS">Senior Software: <span class="logo_colour">Ruby Group</span></a></h1>
 						<h2>Simple. Sexy. Smart.</h2>
 					</div>
 				</div>
-				<nav id="nav">
 				<div id="menu_container">
-					<ul class="sf-menu" id="nav">
-						<li><a href="/Home.erb">Home</a></li>  
-						<li><a>Tenants</a>
-							<ul>
-								<li><a href="/Tenants_List.erb">List Tenants</a></li>
-								<li><a href="/Tenants_Delete.erb">Delete Tenant</a></li>
-								<li><a href="/Tenants_Add.erb">Add Tenant</a></li>
-								<li><a href="/Tenants_Get.erb">Get Tenant</a></li>
-							</ul>
-						</li>
-						<li><a>Users</a>
-							<ul>
-								<li><a href="Users_List.erb">List Users</a></li>
-								<li><a href="Users_Delete.erb">Delete User</a></li>
-								<li><a href="Users_Add.erb">Add User</a></li>
-								<li><a href="Users_Get.erb">Get User</a></li>
-								<li><a href="Users_Update_Password.erb">Update User Password</a></li>
-							</ul>
-						</li>
-						<li><a>Services</a>
-							<ul>
-								<li><a href="Services_List.erb">List Services</a></li>
-								<li><a href="Services_Delete.erb">Delete Service</a></li>
-								<li><a href="Services_Add.erb">Add Service</a></li>
-								<li><a href="Services_Get.erb">Get Service</a></li>
-							</ul>
-						</li>
-						<li><a>Endpoints</a>
-							<ul>
-								<li><a href="Endpoints_List.erb">List Endpoints</a></li>
-								<li><a href="Endpoints_Delete.erb">Delete Endpoint</a></li>
-								<li><a href="Endpoints_Add.erb">Add Endpoint</a></li>
-								<li><a href="Endpoints_Get.erb">Get Endpoint</a></li>
-							</ul>
-						</li>
-						<li><a>Roles</a>
-							<ul>
-								<li><a href="Roles_List.erb">List Roles</a></li>
-								<li><a href="Roles_Delete.erb">Delete Role</a></li>
-								<li><a href="Roles_Add.erb">Add Role</a></li>
-								<li><a href="Roles_Get.erb">Get Role</a></li>
-							</ul>
-						</li>
-					</ul>
+					<nav>
+						<ul>
+							<li><a href="/Home.erb">Home</a></li>  
+							<li><a>Tenants</a>
+								<ul>
+									<li><a href="/Tenants_List.erb">List Tenants</a></li>
+									<li><a href="/Tenants_Delete.erb">Delete Tenant</a></li>
+									<li><a href="/Tenants_Add.erb">Add Tenant</a></li>
+									<li><a href="/Tenants_Get.erb">Get Tenant</a></li>
+								</ul>
+							</li>
+							<li><a>Users</a>
+								<ul>
+									<li><a href="Users_List.erb">List Users</a></li>
+									<li><a href="Users_Delete.erb">Delete User</a></li>
+									<li><a href="Users_Add.erb">Add User</a></li>
+									<li><a href="Users_Get.erb">Get User</a></li>
+									<li><a href="Users_Update_Password.erb">Update User Password</a></li>
+								</ul>
+							</li>
+							<li><a>Services</a>
+								<ul>
+									<li><a href="Services_List.erb">List Services</a></li>
+									<li><a href="Services_Delete.erb">Delete Service</a></li>
+									<li><a href="Services_Add.erb">Add Service</a></li>
+									<li><a href="Services_Get.erb">Get Service</a></li>
+								</ul>
+							</li>
+							<li><a>Endpoints</a>
+								<ul>
+									<li><a href="Endpoints_List.erb">List Endpoints</a></li>
+									<li><a href="Endpoints_Delete.erb">Delete Endpoint</a></li>
+									<li><a href="Endpoints_Add.erb">Add Endpoint</a></li>
+									<li><a href="Endpoints_Get.erb">Get Endpoint</a></li>
+								</ul>
+							</li>
+							<li><a>Roles</a>
+								<ul>
+									<li><a href="Roles_List.erb">List Roles</a></li>
+									<li><a href="Roles_Delete.erb">Delete Role</a></li>
+									<li><a href="Roles_Add.erb">Add Role</a></li>
+									<li><a href="Roles_Get.erb">Get Role</a></li>
+								</ul>
+							</li>
+						</ul>
+					</nav>
 				</div>
-			</nav>
-			</header>
 		<p>&nbsp;</p>
 		<p>&nbsp;</p>
 		<p>&nbsp;</p>
 		<p>&nbsp;</p>
 		<p>&nbsp;</p>
+		
+		<div id="stylized-form" class="myform">
+			<form id="form" name="form" action="/Endpoints_Get_Form.erb" method="get">  
+				 <h1>Get Endpoints</h1>
+				 <p>Gets endpoints from the endpoint ID</p>
+				 
+				 <label>Endpoint ID
+				 <span class="small">Enter Endpoint ID</span>
+				 </label>
+				 <input type="text" name="endpointID" id="endpointID" />
+				 
+				 <button type="submit">Submit</button>
+				 <div class="space"></div>
+			</form>  
+		</div>
 
-		<form id = "content" action="/Endpoints_Get_Form.erb" method="get">  
-      		 ID: <input type="text" name="id"><br>
-			 <input type="submit" value="Submit"> 
-    	</form>  
 
 		<p>&nbsp;</p>
 		<p>&nbsp;</p>

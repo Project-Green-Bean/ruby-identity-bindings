@@ -76,40 +76,11 @@ h5 {
 	color: #FFF;
 }
 
-a, a:hover { 
-	outline: none;
-	text-decoration: underline;
-	color: #00E6FF;
-}
-
-a:hover { 
-  text-decoration: none;
-}
-
 blockquote { 
 	margin: 20px 0; 
 	padding: 10px 20px 0 20px;
 	border: 1px solid #E5E5DB;
 	background: #FFF;
-}
-
-ul { 
-	margin: 2px 0 22px 17px;
-}
-
-ul li { 
-	list-style-type: circle;
-	margin: 0 0 6px 0; 
-	padding: 0 0 4px 5px;
-	line-height: 1.5em;
-}
-
-ol { 
-	margin: 8px 0 22px 20px;
-}
-
-ol li { 
-	margin: 0 0 11px 0;
 }
 
 .left { 
@@ -183,18 +154,6 @@ header {
 	font: 170% 'News Cycle', arial, sans-serif;
 	padding: 0 0 0 0;
 }
-
-nav { 
-	height: 40px;
-	width: 1000px;
-	margin: -34px auto 0 auto;
-	-webkit-border-radius: 13px 13px 13px 13px; 
-	-moz-border-radius: 13px 13px 13px 13px;
-	border-radius: 13px 13px 13px 13px;
-	color: #FFF;
-	border: solid 1px #003B56;
-	background: #002A3E;
-} 
 
 #menu_container { 
 	width: 930px;
@@ -291,6 +250,8 @@ footer {
 	width: 930px;
 	font: 220% 'Tagesschrift', arial, sans-serif;
 	height: 30px;
+	position: fixed;
+	bottom: 0;
 	padding: 5px 0 20px 0;
 	text-align: center; 
 	-webkit-border-radius: 13px 13px 13px 13px; 
@@ -499,54 +460,163 @@ ul ul span.sf-arrow {
 }
 
 /* MENU */
-ul#nav { 
-	float: right;
+
+nav { 
+	height: 40px;
+	width: 1000px;
+	margin: -34px auto 0 auto;
 }
 
-ul#nav ul { 
-	background: #0DBBD5;
-	margin-top: -5px;
-	padding-bottom: 15px;
+nav ul ul {
+	display: none;
 }
 
-ul#nav ul ul {
-	background: #5f6975;
-	position: absolute; left: 0;
-}
+	nav ul li:hover > ul {
+		display: block;
+	}
 
-ul#nav ul ul li {
-	float: right;
-	border-top: 1px solid #6b727c;
-		border-bottom: 1px solid #575f6a;
-}
 
-ul#nav ul ul li a {
-	padding: 15px 40px;
-	color: #fff;
+nav ul {
+	background: #002A3E; 
+	box-shadow: 0px 0px 9px rgba(0,0,0,0.15);
+	padding: 0 20px;
+	border-radius: 10px;  
+	list-style: none;
+	position: relative;
+	display: inline-table;
+}
+	nav ul:after {
+		content: ""; 
+		clear: both; 
+		display: block;
+	}
+
+	nav ul li {
+		float: left;
+		font-size: 14px;
+	}
+		nav ul li:hover {
+			background: #4b545f;
+		}
+			nav ul li:hover a {
+				color: #fff;
+			}
+		
+		nav ul li a {
+			display: block; 
+			padding: 25px 40px;
+			color: #757575; 
+			text-decoration: none;
+		}
+			
+		
+	nav ul ul {
+		background: #5f6975; 
+		border-radius: 0px; 
+		padding: 0;
+		position: absolute; 
+		top: 100%;
+	}
+		nav ul ul li {
+			float: none; 
+			border-top: 1px solid #6b727c;
+			border-bottom: 1px solid #575f6a; position: relative;
+		}
+			nav ul ul li a {
+				padding: 15px 40px;
+				color: #fff;
+			}	
+				nav ul ul li a:hover {
+					background: #4b545f;
+				}
+		
+	nav ul ul ul {
+		position: absolute; left: 100%; top:0;
+	}
+	
+/*Entry Forms */
+
+.myform
+{
+	margin: 0 auto;
+	width: 400px;
+	padding: 14px;
 }	
 
-ul#nav ul ul li a:hover {
-	background: #4b545f;
+#stylized-form
+{
+	border: solid 2px #b4ddf2;
+	background: #002A3E;
 }
 
-ul#nav li a { 
-	padding:8px 20px 6px 20px;
-	font: 240% 'Tagesschrift', arial, sans-serif;
-	text-decoration: none;
-	color: #FFF;
-	margin-right: 2px;
+#stylized-form h1
+{
+	font-size: 14px;
+	font-weight: bold;
+	margin-bottom: 8px;
 }
 
-ul#nav li a:hover, ul#nav li a:focus { 
-	color: #D054FF;
-	text-shadow: none;
-}	
-
-ul#nav ul li a { 
-	padding: 13px 20px 6px 20px;
+#stylized-form p
+{
+	font-size: 11px;
+	color: #666666;
+	margin-bottom: 20px;
+	border-bottom: solid 1px #b4ddf2;
+	padding-bottom: 10px;
 }
 
-ul#nav ul li a:hover, ul#nav ul li a:focus { 
-	color: #000;
-	text-shadow: none;
+#stylized-form label
+{
+	display: block;
+	font-weight: bold;
+	text-align: right;
+	width: 140px;
+	float: left;
+}
+
+#stylized-form .small
+{
+	color: #666666;
+	display: block;
+	font-size: 11px;
+	font-weight: normal;
+	text-align: right;
+	width: 140px;
+}
+
+#stylized-form input
+{
+	float: left;
+	font-size: 12px;
+	padding: 4px 2px;
+	border: solid 1px #aacfe4;
+	width: 200px;
+	margin: 2px 0 20px 10px;
+}
+
+#stylized-form button
+{
+	clear: both;
+	margin-left: 150px;
+	width: 125px;
+	height: 31px;
+	background: #666666;
+	text-align: center;
+	line-height: 31px;
+	color: #ffffff;
+	font-size: 11px;
+	font-weight: bold;
+}
+
+/*printing stuff*/
+
+#print-area
+{
+	margin: auto;
+}
+
+#print-area p
+{
+	padding: 14px;
+	font-size: 16px;
 }
