@@ -1,7 +1,7 @@
 require File.join(File.dirname(__FILE__), '../lib/keystone.rb')
-require File.join(File.dirname(__FILE__), '../test/test_parameters.rb')
 require 'test/unit'
-require 'rubygems'
+require File.join(File.dirname(__FILE__), '../test/test_parameters.rb')
+
 #testing the role functions
 
 class TestRole < Test::Unit::TestCase
@@ -11,9 +11,8 @@ class TestRole < Test::Unit::TestCase
 	$aut.auth($tenant)
 	$fai.auth($tenant)
 
-
+	
 	begin #role_list
-
 		def test_role_list	
 			expected = $aut.role_list
 			assert(expected.has_key? 'roles')
@@ -21,7 +20,7 @@ class TestRole < Test::Unit::TestCase
 		
 		def test_role_list_fail_to_authenticate
 			expected = $fai.role_list
-			assert(expected.has_key?('error'))
+			assert(expected == nil)
 		end
 
 	end #role_list
@@ -40,17 +39,21 @@ class TestRole < Test::Unit::TestCase
 			assert(expected.has_key?("error"))
 		end	
 		
-		def test_role_create_fail_to_authenticate			
-			expected = $fai.role_create(b)			
-			assert(expected.has_key?("error"))
+		def test_role_create_fail_to_authenticate	
+			cnt = 0
+			begin
+				expected = $aut.role_create("testName".concat((cnt = cnt+1).to_s))
+			end while(expected.has_key?("error"))
+			expected = $fai.role_create(expected)			
+			assert(expected == nil)
 		end
 		
 		def test_role_create_already_exists 
 			cnt = 0
 			begin
-				b = "testName".concat((cnt = cnt+1).to_s
+				b = "testName".concat((cnt = cnt+1).to_s)
 				c = $aut.role_create(b)
-			end while(expected.has_key?("error"))
+			end while(c.has_key?("error"))
 			expected = $aut.role_create(b)
 			$aut.role_delete(c["role"]["id"])
 			assert(expected.has_key?("error"))
@@ -64,9 +67,9 @@ class TestRole < Test::Unit::TestCase
 		def test_role_get	
 			cnt = 0
 			begin
-				b = "testName".concat((cnt = cnt+1).to_s
+				b = "testName".concat((cnt = cnt+1).to_s)
 				c = $aut.role_create(b)
-			end while(expected.has_key?("error"))
+			end while(c.has_key?("error"))
 			d = c["role"]["id"]
 			expected = $aut.role_get(d)["role"]["id"]
 			assert_equal(expected, d)
@@ -74,7 +77,7 @@ class TestRole < Test::Unit::TestCase
 		
 		def test_role_get_fail_to_authenticate
 			expected = $fai.role_get($existingID)
-			assert(expected.has_key?("error"))
+			assert(expected == nil)
 		end
 		
 		def test_role_get_does_not_exist
@@ -106,7 +109,7 @@ class TestRole < Test::Unit::TestCase
 			real = expected["role"]["id"]
 			expected = $fai.role_delete(real)
 			$aut.role_delete(real)
-			assert(expected == false)
+			assert(expected == nil)
 		end
 		
 		def test_role_delete_does_not_exist
