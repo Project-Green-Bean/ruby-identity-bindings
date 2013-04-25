@@ -144,5 +144,33 @@ class TestUser < Test::Unit::TestCase
     assert_equal(a.user_password_update("1337", "31337")['error']['code'],404)
   end
 
+
+  begin #user_update
+  
+  def test_user_update
+    # This should work fine
+    a = Keystone.new($admin, $adminPass, $serverURL, $serverPort1, $serverPort2)
+    a.auth($tenant)
+    newTenant = a.tenant_create("test_user_update", "testing user update")
+    newUser = a.user_create("test","test email 1", "password",newTenant['tenant']['id'])
+    userID = newUser['user']['id']
+    oldUserInfo = newUser['user']['email']
+    a.user_update("email 2",userID)
+    newUserInfo = newUser['user']['email']
+    assert(false, oldUserInfo == newUserInfo)
+    a.user_delete(userID)
+    a.tenant_delete(newTenant['tenant']['id'])
+	end
+		
+	def test_user_update_error
+    # This should not be allowed
+    a = Keystone.new($admin, $adminPass, $serverURL, $serverPort1, $serverPort2)
+    a.auth($tenant)
+    errorFail = a.user_update("failed","failed","randomidlolno")
+    assert(errorFail == nil)
+	end
+  
+  end #user_update
+
 end
 
