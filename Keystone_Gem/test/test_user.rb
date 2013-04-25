@@ -57,10 +57,19 @@ class TestUser < Test::Unit::TestCase
     c = Keystone.new($admin, $adminPass, $serverURL, $serverPort1, $serverPort2)
     c.auth($tenant)
 
-
+    withoutUser = c.user_list
     newTenant = c.tenant_create("test_user_delete", "")
     newUser = c.user_create("test_user_delete", "email", "password", newTenant['tenant']['id'])
-    with
+    withUser = c.user_list
+
+    difference = withUser['users'].size - withoutUser['users'].size
+    assert_equal(1, difference)
+    assert_equal(true, c.user_delete(newUser['user']['id']))
+    userDeletedList = c.user_list
+    difference = withoutUser['users'].size - userDeletedList['users'].size
+    assert_equal(0, difference)
+    c.tenant_delete(newTenant['tenant']['id'])
+
 
   end
 
@@ -118,7 +127,8 @@ class TestUser < Test::Unit::TestCase
     a.tenant_delete(newTenant['tenant']['id'])
   end
 
-  def test_user_password_update_unauthorized
+=begin
+    def test_user_password_update_unauthorized
     #this should not allow a user's password to be changed
     a = Keystone.new($admin, $adminPass, $serverURL, $serverPort1, $serverPort2)
     a.auth($tenant)
@@ -135,7 +145,8 @@ class TestUser < Test::Unit::TestCase
 
     a.user_delete(testUser['user']['id'])
     a.tenant_delete(testTenant['tenant']['id'])
-  end
+    end
+=end
 
   def test_user_password_update_user_doesnt_exist
     #this should not allow a user's password to be changed
