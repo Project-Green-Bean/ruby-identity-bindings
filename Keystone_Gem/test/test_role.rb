@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 require File.join(File.dirname(__FILE__), '../lib/keystone.rb')
 require 'test/unit'
 require File.join(File.dirname(__FILE__), '../test/test_parameters.rb')

@@ -22,7 +22,6 @@ class Keystone
 
     if (tenant == "")
       e1 = "Error in function auth: Invalid Tenant Name"
-
       return [false, e1]
     end
 
@@ -49,7 +48,7 @@ class Keystone
         @token_json   = @catalog_json["access"]["token"]
         @token        = @token_json["id"]
         @auth         = true
-        return [true, "Successful Authentication"]
+        return [true, "Successfully Authenticated"]
       end
     rescue
       e3 = "Error in function auth: Failure to reach server"
