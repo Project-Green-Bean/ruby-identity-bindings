@@ -26,8 +26,8 @@ class Keystone
       return false
     end
 
-    auth        = {"auth" => {"passwordCredentials" => {"username" => @user_name, "password" => @password},
-                              "tenantName"          => tenant}}
+    auth = {"auth" => {"passwordCredentials" => {"username" => @user_name, "password" => @password},
+                              "tenantName"   => tenant}}
     json_string = JSON.generate(auth)
 
     begin
@@ -64,6 +64,7 @@ class Keystone
 			puts "You are not authorized to execute this function"
 			return nil
 		  end
+		  
       script     = {"user" => {"id" => user_id, "password" => password}}
       jsonscript = JSON.generate(script)
       get_call   = Curl::Easy.http_put("#{@ip_address}:#{@port_2}/v2.0/users/#{user_id}/OS-KSADM/password", jsonscript
@@ -334,6 +335,7 @@ class Keystone
   begin #ROLE OPS
 
     def role_create(name)
+	
       role        = {"role" => {"name" => name}}
       json_string = JSON.generate(role)
       post_call   = Curl::Easy.http_post("#{@ip_address}:#{@port_2}/v2.0/OS-KSADM/roles", json_string
