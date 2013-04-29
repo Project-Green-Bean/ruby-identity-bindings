@@ -27,7 +27,7 @@ class TestService < Test::Unit::TestCase
 			count = 0
 			begin
 				expected = $aut.service_create("TestService".concat((count = count+1).to_s),"TestService", "This is a test description")
-			end while(expected[1].has_key?("error"))
+			end while(expected[1].key?("error"))
 			expectedID = expected[1]["OS-KSADM:service"]["id"]
 			$aut.service_get(expectedID)
 			$aut.service_delete(expectedID)
@@ -51,7 +51,7 @@ class TestService < Test::Unit::TestCase
 			count = 0
 			begin
 				serviceID = $aut.service_create("TestService".concat((count = count+1).to_s),"TestService", "This is a test description")
-			end while(serviceID[1].has_key?("error"))
+			end while(serviceID[1].key?("error"))
 			serviceID = serviceID[1]["OS-KSADM:service"]["id"]
 			expected = $aut.service_get(serviceID)[0]
 			$aut.service_delete(serviceID)
@@ -75,7 +75,7 @@ class TestService < Test::Unit::TestCase
 			count = 0
 			begin
 				expected = $aut.service_create("TestService".concat((count = count+1).to_s), "TestService", "This is a test description")
-			end while(expected[1].has_key?("error"))
+			end while(expected[1].key?("error"))
 			expected = expected[1]["OS-KSADM:service"]["id"]
 			$aut.service_get(expected)
 			expected = $aut.service_delete(expected)[0]

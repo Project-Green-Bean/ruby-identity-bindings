@@ -199,11 +199,11 @@ class Keystone
 
     def service_delete(id)
 
-      if not service_get(id).has_key?('error')
+      if not service_get(id)[1].key?('error')
         delete_call = Curl::Easy.http_delete("#{@ip_address}:#{@port_2}/v2.0/OS-KSADM/services/#{id}"
         ) do |curl|
           curl.headers['x-auth-token'] = @token end
-        parsed_json = JSON.parse(delete_call.body_str)
+        parsed_json = delete_call.body_str
         return [true, parsed_json]
       else
         return [false, parsed_json]
