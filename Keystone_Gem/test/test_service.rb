@@ -75,7 +75,7 @@ class TestService < Test::Unit::TestCase
 			count = 0
 			begin
 				expected = $aut.service_create("TestService".concat((count = count+1).to_s), "TestService", "This is a test description")
-			end while(expected[1]has_key?("error"))
+			end while(expected[1].has_key?("error"))
 			expected = expected[1]["OS-KSADM:service"]["id"]
 			$aut.service_get(expected)
 			expected = $aut.service_delete(expected)[0]

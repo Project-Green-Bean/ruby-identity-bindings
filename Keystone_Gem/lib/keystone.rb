@@ -190,7 +190,7 @@ class Keystone
         curl.headers['Content-Type'] = 'application/json'
       end
       parsed_json = JSON.parse(post_call.body_str)
-      if (parsed_json.keys? 'error')
+      if (parsed_json.key? 'error')
         return [false,parsed_json]
       else
         return [true,parsed_json]
@@ -217,7 +217,7 @@ class Keystone
         curl.headers['x-auth-token'] = @token
       end
       parsed_json = JSON.parse(get_call.body_str)
-      if (parsed_json.keys? 'error')
+      if (parsed_json.key? 'error')
         return [false, parsed_json]
       else
         return [true, parsed_json]
@@ -230,7 +230,7 @@ class Keystone
         curl.headers['x-auth-token'] = @token
       end
       parsed_json = JSON.parse(get_call.body_str)
-      if (parsed_json.keys? 'error')
+      if (parsed_json.key? 'error')
         return [false, parsed_json]
       else
         return [true, parsed_json]
