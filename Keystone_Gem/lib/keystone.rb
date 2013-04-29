@@ -370,30 +370,35 @@ class Keystone
         curl.headers['Content-Type'] = 'application/json'
       end
       parsed_json = JSON.parse(post_call.body_str)
-      if (parsed_json.keys.include? 'error') then return [false,parsed_json]
+      if (parsed_json.key? 'error') then return [false,parsed_json]
       else return [true,parsed_json]
       end
     end
 
     def role_delete(role)
-      a = role_list
-      if(a.values.include? role)
-        delete_call = Curl::Easy.http_delete("#{@ip_address}:#{@port_2}/v2.0/OS-KSADM/roles/#{role}"
-        ) do |curl|
-          curl.headers['x-auth-token'] = @token
-        end
-        parsed_json = JSON.parse(delete_call.body_str)
-        return [true,parsed_json]
-      else
-        return [false,nil]
-      end
-    end
+	  	a = role_list
+	    delete_call = Curl::Easy.http_delete("#{@ip_address}:#{@port_2}/v2.0/OS-KSADM/roles/#{role}"
+	    ) do |curl|
+	      curl.headers['x-auth-token'] = @token
+	    end
+
+		if((delete_call.body_str).empty?) then 
+			return [true,nil]
+	  	else 
+			parsed_json = JSON.parse(delete_call.body_str)
+		end
+	    if(parsed_json.key?("error")) then 
+			return [false,parsed_json]
+        else 
+			return [true,parsed_json] 
+		end 
+	end
 
     def role_get(role)
       get_call = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/OS-KSADM/roles/#{role}"
       ) do |curl| curl.headers['x-auth-token'] = @token end
       parsed_json = JSON.parse(get_call.body_str)
-      if (parsed_json.keys.include? 'error')
+      if (parsed_json.key? 'error')
         return [false, parsed_json]
       else
         return [true, parsed_json]
@@ -404,7 +409,7 @@ class Keystone
       get_call = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/OS-KSADM/roles"
       ) do |curl| curl.headers['x-auth-token'] = @token end
       parsed_json = JSON.parse(get_call.body_str)
-      if (parsed_json.keys.include? 'error')
+      if (parsed_json.key? 'error')
         return [false, parsed_json]
       else
         return [true, parsed_json]
