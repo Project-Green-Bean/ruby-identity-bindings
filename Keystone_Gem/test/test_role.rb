@@ -7,7 +7,7 @@ require File.join(File.dirname(__FILE__), '../test/test_parameters.rb')
 class TestRole < Test::Unit::TestCase
 
 	$aut = Keystone.new($admin,$adminPass,$serverURL,$serverPort1,$serverPort2)
-	$fai = Keystone.new($admin,$randomPass,$serverURL,$serverPort1,$serverPort2)
+	$fai = Keystone.new($admin,"dsadsa",$serverURL,$serverPort1,$serverPort2)
 	$aut.auth($tenant)
 	$fai.auth($tenant)
 
@@ -94,35 +94,22 @@ class TestRole < Test::Unit::TestCase
 			begin
 				expected = $aut.role_create("testName".concat((cnt = cnt+1).to_s))
 			end while(expected[0] == false)
-			d = expected["role"]["id"]
-			expected = $aut.role_delete(d)[0]
-			assert(expected)
+			d = expected[1]["role"]["id"]
+			expected = $aut.role_delete(d)
+			assert(expected[0])
 		end	
 		
 		def test_role_delete_fail_to_authenticate
-			cnt = 0
-			begin
-				expected = $aut.role_create("testName".concat((cnt = cnt+1).to_s))
-			end while(expected[0] == false)
-			d = expected[1]["role"]["id"]
-			expected = $fai.role_delete(d)[0]
-			$aut.role_delete(d)
+			expected = $fai.role_delete("ThisShouldn'tExist")[0]
 			assert(!expected)
 		end
 		
 		def test_role_delete_does_not_exist
-			cnt = 0
-			begin
-				expected = $aut.role_create("testName".concat((cnt = cnt+1).to_s))
-			end while(expected[0] == false)
-			d = expected[1]["role"]["id"]
-			$aut.role_delete(d)
-			expected = $aut.role_delete(d)[0]
+			expected = $aut.role_delete("ThisShouldn'tExist")[0]
 			assert(!expected)
 		end
+				
 
 	end #role_delete
 	
 end
-
-
