@@ -27,18 +27,21 @@ class TestTenant < Test::Unit::TestCase
 	end
 	
 	def test_tenant_create
-		expected = $aut.tenant_create("testing","testing")
-		assert_not_nil(expected[0])
+		a = $aut.tenant_create("testing","testing")
+		expected = a[0]
+		assert_equal expected, true
 	end
 
 	def test_tenant_get_tenant_in_database
 		id = tenant_id_search($aut, "testing")
-		expected = $aut.tenant_get(id)
+		a = $aut.tenant_get(id)
+		expected = a[0]
 		assert_equal expected, true
 	end
 	
 	def test_tenant_get_tenant_not_in_database
-		expected = $aut.tenant_get("TENANT_NOT_IN_DATABASE!!")
+		a = $aut.tenant_get("TENANT_NOT_IN_DATABASE!!")
+		expected = a[0]
 		assert_equal expected, false
 	end
 	
@@ -50,7 +53,7 @@ class TestTenant < Test::Unit::TestCase
 		if id != 0
 			expected = a[0]
 		else
-			excpected = nil
+			excpected = false
 		end
 		assert_equal expected, true
 	end
@@ -72,7 +75,7 @@ end
 def tenant_id_search(keystone_object, name)
 	
 		t = keystone_object.tenant_list
-		tenants = t[0]
+		tenants = t[1]
 		tenant_list = tenants["tenants"]
 		
 		for t in tenant_list

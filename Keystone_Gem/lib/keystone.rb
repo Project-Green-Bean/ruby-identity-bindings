@@ -240,11 +240,20 @@ class Keystone
 
   begin #MISC. OPS
     def catalog
-      return @catalog_json
+	
+	if(@auth == false)
+		return [false, nil]
+	else
+		return [true,@catalog_json]
+	end
     end
 
     def token_get()
-      return @token_json
+      if(@auth == false)
+		return [false, nil]
+	else
+		return [true,@token_json]
+	end
     end
   end #MISC. OPS
 
@@ -331,16 +340,19 @@ class Keystone
         delete_call = Curl::Easy.http_delete("#{@ip_address}:#{@port_2}/v2.0/tenants/#{tenant_id}"
         ) do |curl|
           curl.headers['x-auth-token'] = @token
-          curl.headers['userId']       = tenant_id
         end
 
-        parsed_json = JSON.parse(delete_call.body_str)
-
-        return [true, parsed_json]
-
-      rescue
-
-        return [false, parsed_json]
+        if (delete_call.body_str).empty?
+			return [true, nil]
+		else
+			parsed_json = JSON.parse(delete_call.body_str)
+			
+			if parsed_json.key? 'error'
+				return [false, parsed_json]
+			else
+				return [true, nil]
+			end
+		end
 
       end
     end
@@ -544,3 +556,10 @@ class Keystone
     end
   end #ENDPOINT OPS
 end
+
+
+
+c = Keystone.new("admin","trinitytu","http://cloud.cs.trinity.edu","5000","35357")
+c.auth"demo"
+
+c.tenant_create "test","test"
