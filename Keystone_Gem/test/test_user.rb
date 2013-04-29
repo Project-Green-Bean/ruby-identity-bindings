@@ -36,13 +36,20 @@ class TestUser < Test::Unit::TestCase
     c.tenant_delete(newTenant[0]['tenant']['id'])
   end
 
-=begin
-  def test_user_create_unauthorized
-    #this should not allow creation of users
+  def test_user_create_duplicate
     c = Keystone.new($admin, $adminPass, $serverURL, $serverPort1, $serverPort2)
     c.auth($tenant)
+    newTenant = c.tenant_create("test_user_create_duplicate", "")
+    newUser = c.user_create("test_user_create_duplicate", "email", "password", newTenant[0]['tenant']['id'])
+    duplicateUser = c.user_create("test_user_create_duplicate", "email", "password", newTenant[0]['tenant']['id'])
+
+    assert_equal(409, duplicateUser[1]['code'])
+
+
+    c.user_delete(newUser['user']['id'])
+    c.tenant_delete(newTenant['tenant'])
+
   end
-=end
 
   def test_user_create_invalid_tenant
     #this should not allow creation of users

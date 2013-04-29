@@ -99,6 +99,10 @@ class Keystone
       end
       parsed_json = JSON.parse(post_call.body_str)
 
+      if parsed_json.has_key? 'error'
+        return [false, parsed_json['error']]
+      end
+
       return parsed_json
     end
 
@@ -267,7 +271,7 @@ class Keystone
         e = error.to_s
         return [nil, e]
       else
-        return [parsed_json, "Successfully exectued tenant_get"]
+        return [parsed_json, "Successfully executed tenant_get"]
       end
     end
 
