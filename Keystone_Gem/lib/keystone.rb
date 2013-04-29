@@ -246,6 +246,7 @@ class Keystone
 
   begin #TENANT OPS
 
+  
     def tenant_list
       get_call = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/tenants"
       ) do |curl|
@@ -254,7 +255,7 @@ class Keystone
 
       parsed_json = JSON.parse(get_call.body_str)
 
-      return [parsed_json, "Successfully returned tenant_list"]
+      return [true, parsed_json]
     end
 
     def tenant_get(tenant_id)
@@ -266,12 +267,12 @@ class Keystone
 
       parsed_json = JSON.parse(get_call.body_str)
 
-      if (parsed_json.to_s.include? 'error')
+      if (parsed_json.key? 'error')
         error = parsed_json["error"]["message"]
         e = error.to_s
-        return [nil, e]
+        return [false, e]
       else
-        return [parsed_json, "Successfully executed tenant_get"]
+        return [true, parsed_json]
       end
     end
 
@@ -286,13 +287,13 @@ class Keystone
       end
       parsed_json = JSON.parse(post_call.body_str)
 
-      if (parsed_json.to_s.include? 'error')
+      if (parsed_json.key? 'error')
         error = parsed_json["error"]["message"]
 
         e = error.to_s
-        return [nil, e]
+        return [false, e]
       else
-        return [parsed_json, "Successfully created tenant #{name}"]
+        return [true, parsed_json]
       end
     end
 
@@ -309,13 +310,13 @@ class Keystone
       end
       parsed_json = JSON.parse(post_call.body_str)
 
-      if (parsed_json.to_s.include? 'error')
+      if (parsed_json.key? 'error')
         error = parsed_json["error"]["message"]
 
          e = error.to_s
-        return [nil, e]
+        return [false, e]
       else
-        return [parsed_json, "Successfully updated tenant #{name}"]
+        return [true, parsed_json]
       end
 
     end
@@ -329,14 +330,17 @@ class Keystone
           curl.headers['userId']       = tenant_id
         end
 
-        return [true, "Tenant Deleted Successfully"]
+		parsed_json = JSON.parse(delete_call.body_str)
+		
+        return [true, parsed_json]
 
       rescue
 
-        return [false, "Tenant failed to Delete"]
+        return [false, parsed_json]
 
       end
     end
+
 
   end #TENANT OPS
 
