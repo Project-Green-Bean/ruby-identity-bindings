@@ -513,7 +513,7 @@ class Keystone
 
     def endpoint_create(region, service_id, publicurl, adminurl, internalurl)
       body        = {"endpoint" => {"region"   => region, "service_id" => service_id,
-                                    "publicurl" => publicurl, "adminurl" => adminurl, "internalurl" => internalurl}}
+ 		"publicurl" => publicurl, "adminurl" => adminurl, "internalurl" => internalurl}}
       json_string = JSON.generate(body)
       post_call   = Curl::Easy.http_post("#{@ip_address}:#{@port_2}/v2.0/endpoints", json_string
       ) do |curl|
@@ -521,28 +521,33 @@ class Keystone
         curl.headers['Content-Type'] = 'application/json'
       end
       parsed_json = JSON.parse(post_call.body_str)
-      return parsed_json
+	  if(parsed_json.key?("error")) then return [false,parsed_json]
+      else return [true,parsed_json] end
     end
 
     def endpoint_delete(endpoint_id)
-      begin
-        delete_call = Curl::Easy.http_delete("#{@ip_address}:#{@port_2}/v2.0/endpoints/#{endpoint_id}"
-        ) do |curl|
-          curl.headers['x-auth-token'] = @token
-        end
-        return [true,JSON.parse(delete_call.body_str)]
-      rescue
-        return [false,JSON.parse(delete_call.body_str)]
-      end
+	  delete_call = Curl::Easy.http_delete("#{@ip_address}:#{@port_2}/v2.0/endpoints/#{endpoint_id}"
+	  ) do |curl|
+		curl.headers['x-auth-token'] = @token
+	  end
+	  if((delete_call.body_str).empty?) then return [true,nil] # What is the hex thing
+	  else 
+		parsed_json = JSON.parse(delete_call.body_str)
+	    if(parsed_json.key?("error")) then return [false,parsed_json]
+        else return [true,parsed_json] end # Should never occur (Delete always errors or empties)
+	  end
     end
 
     def endpoint_get(endpoint_id)
-      value = endpoint_list[1]["endpoints"]
-      count = 0
-      while count < value.length do
-        if (value[count]["id"] == endpoint_id) then return [true,value[count]] end
-        count += 1
-      end
+      list = endpoint_list
+	  if(list[0]) then
+		value = list[1]["endpoints"]
+		count = 0
+		while count < value.length do
+		  if (value[count]["id"] == endpoint_id) then return [true,value[count]] end
+		count += 1
+		end
+	  end
       return [false,nil]
     end
 
@@ -552,14 +557,8 @@ class Keystone
         curl.headers['x-auth-token'] = @token
       end
       parsed_json = JSON.parse(get_call.body_str)
-      return [true,parsed_json] #No obvious fail case on our side
+	  if(parsed_json.key?("error")) then return [false,parsed_json]
+      else return [true,parsed_json] end
     end
   end #ENDPOINT OPS
 end
-
-
-
-c = Keystone.new("admin","trinitytu","http://cloud.cs.trinity.edu","5000","35357")
-c.auth"demo"
-
-c.tenant_create "test","test"
