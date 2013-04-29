@@ -1,15 +1,13 @@
-require '/home/thicks/Desktop/keiths/Keystone.rb'
+require File.join(File.dirname(__FILE__), '../lib/keystone.rb')
 require 'test/unit'
+require File.join(File.dirname(__FILE__), '../test/test_parameters.rb')
 #testing the endpoint functions
-#demo trinitytu 131.194.71.143 5000 35357
 class TestRole < Test::Unit::TestCase
-  #("admin","password","http://198.61.199.47","5000","35357")
-	def initialize(name, password, ip_address, port_1, port_2, ten)
-@aut = Keystone.new(name,password,ip_address,port_1,port_2)
-@fai = Keystone.new(name,name.concat("1"),ip_address,port_1,port_2)
-	aut.auth(ten)
-	fai.auth(ten)
-	end
+
+	$aut = Keystone.new($admin,$adminPass,$serverURL,$serverPort1,$serverPort2)
+	$fai = Keystone.new($admin,$randomPass,$serverURL,$serverPort1,$serverPort2)
+	$aut.auth($tenant)
+	$fai.auth($tenant)
 	
 	begin #endpoint_list
 		def test_endpoint_list
