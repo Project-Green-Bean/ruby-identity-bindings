@@ -5,12 +5,15 @@ require 'test/unit'
 #testing the auth function
 
 class TestTenant < Test::Unit::TestCase
+
+	$aut = Keystone.new($admin,$adminPass,$serverURL,$serverPort1,$serverPort2)
+	$fai = Keystone.new($admin,$randomPass,$serverURL,$serverPort1,$serverPort2)
+	$aut.auth($tenant)
+	$fai.auth($tenant)
 	
 #tenant_list
 	def test_tenant_list	
-		c = Keystone.new($admin,$adminPass,$serverURL,$serverPort1,$serverPort2)
-		c.auth($tenant)
-		a = c.tenant_list
+		a = $aut.tenant_list
 		expected = a[0]
 		assert_not_nil(expected)
 	end
@@ -18,40 +21,32 @@ class TestTenant < Test::Unit::TestCase
 	def tenant_list_different_tenant
 		d = Keystone.new("test01u",$adminPass,$serverURL,$serverPort1,$serverPort2)
 		d.auth("test01")
-		a = c.tenant_list
+		a = $aut.tenant_list
 		expected = a[0]
 		assert_not_nil(expected)
 	end
 	
 	def test_tenant_create
-		c = Keystone.new($admin,$adminPass,$serverURL,$serverPort1,$serverPort2)
-		c.auth($tenant)
-		expected = c.tenant_create("testing","testing")
+		expected = $aut.tenant_create("testing","testing")
 		assert_not_nil(expected[0])
 	end
 
 	def test_tenant_get_tenant_in_database
-		c = Keystone.new($admin,$adminPass,$serverURL,$serverPort1,$serverPort2)
-		c.auth($tenant)
-		id = tenant_id_search(c, "testing")
-		expected = c.tenant_get(id)
+		id = tenant_id_search($aut, "testing")
+		expected = $aut.tenant_get(id)
 		assert_not_nil(expected[0])
 	end
 	
 	def test_tenant_get_tenant_not_in_database
-		c = Keystone.new($admin,$adminPass,$serverURL,$serverPort1,$serverPort2)
-		c.auth($tenant)
-		expected = c.tenant_get("TENANT_NOT_IN_DATABASE!!")
+		expected = $aut.tenant_get("TENANT_NOT_IN_DATABASE!!")
 		assert_nil(expected[0])
 	end
 	
 	
 	def test_tenant_update
-		c = Keystone.new($admin,$adminPass,$serverURL,$serverPort1,$serverPort2)
-		c.auth($tenant)
-		id = tenant_id_search(c, "testing")
+		id = tenant_id_search($aut, "testing")
 		
-		a = c.tenant_update("change_the_testing_temp", "change a test", id)
+		a = $aut.tenant_update("change_the_testing_temp", "change a test", id)
 		if id != 0
 			expected = a[0]
 		else
@@ -61,11 +56,9 @@ class TestTenant < Test::Unit::TestCase
 	end
 	
 	def test_tenant_delete
-		c = Keystone.new($admin,$adminPass,$serverURL,$serverPort1,$serverPort2)
-		c.auth($tenant)
-		id = tenant_id_search(c, "change_the_testing_temp")
+		id = tenant_id_search($aut, "change_the_testing_temp")
 		
-		a = c.tenant_delete(id)
+		a = $aut.tenant_delete(id)
 		if id != 0
 			expected = a[0]
 		else
