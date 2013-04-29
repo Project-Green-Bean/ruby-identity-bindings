@@ -14,7 +14,7 @@ class TestUser < Test::Unit::TestCase
     newUser= c.user_create('test_user_list','test_user_list@com.com','secret', newTenant[1]['tenant']['id'])
     withNewUser = c.user_list
 
-    assert(true, withoutNewUser==withNewUser) #makes sure that the list does in fact change
+    assert(withoutNewUser==withNewUser) #makes sure that the list does in fact change
 
     c.user_delete(newUser['user']['id'])
     c.tenant_delete(newTenant[1]['tenant']['id'])
