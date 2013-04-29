@@ -230,7 +230,11 @@ class Keystone
         curl.headers['x-auth-token'] = @token
       end
       parsed_json = JSON.parse(get_call.body_str)
-      return [true, parsed_json]
+      if (parsed_json.keys.include? 'error')
+	return [false, parsed_json]
+      else
+	return [true, parsed_json]
+      end
     end
   end #Service OPS
 
