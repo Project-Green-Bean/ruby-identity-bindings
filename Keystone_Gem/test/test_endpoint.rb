@@ -17,6 +17,7 @@ class TestRole < Test::Unit::TestCase
 		def test_endpoint_list_fail_to_authenticate
 			expected = fai.endpoint_list
 			assert(!expected[0])
+		end
 	end #endpoint_list
 
 	begin #endpoint_delete
