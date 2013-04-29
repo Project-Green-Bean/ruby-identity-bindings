@@ -12,12 +12,12 @@ class TestService < Test::Unit::TestCase
 	begin #service_list
 		def test_service_list	
 			expected = $aut.service_list[0]
-			assert(expected.has_key? 'OS-KSADM:services')
+			assert(expected)
 		end
 		
 		def test_service_list_fail_to_authenticate
 			expected = $fai.service_list[0]
-			assert(expected.has_key?("error"))
+			assert(not expected)
 		end
 	end #service_list
 	
@@ -27,21 +27,21 @@ class TestService < Test::Unit::TestCase
 			count = 0
 			begin
 				expected = $aut.service_create("TestService".concat((count = count+1).to_s),"TestService", "This is a test description")
-			end while(expected[0].has_key?("error"))
-			expectedID = expected[0]["OS-KSADM:service"]["id"]
+			end while(expected[1].has_key?("error"))
+			expectedID = expected[1]["OS-KSADM:service"]["id"]
 			$aut.service_get(expectedID)
 			$aut.service_delete(expectedID)
-			assert(expected[0].has_key?("OS-KSADM:service"))
+			assert(expected[0])
 		end
 		
 		def test_service_create_fail_to_authenticate
 			expected = $fai.service_create("TestService", "TestService", "This is a test description")[0]
-			assert(expected.has_key?("error"))
+			assert(not expected)
 		end	
 =begin
 		def test_service_create_already_exists
-			expected = $aut.service_create($existingService, $existingType, $existingDescription)
-			assert(expected.has_key?("error"))
+			expected = $aut.service_create($existingService, $existingType, $existingDescription)[0]
+			assert(not expected)
 		end
 =end
 	end #service_create
@@ -50,28 +50,22 @@ class TestService < Test::Unit::TestCase
 		def test_service_get
 			count = 0
 			begin
-				serviceID = $aut.service_create("TestService".concat((count = count+1).to_s),"TestService", "This is a test description")[0]
-			end while(serviceID.has_key?("error"))
-			serviceID = serviceID["OS-KSADM:service"]["id"]
-			expected = $aut.service_get(serviceID)[0]["OS-KSADM:service"]["id"]
+				serviceID = $aut.service_create("TestService".concat((count = count+1).to_s),"TestService", "This is a test description")
+			end while(serviceID[1].has_key?("error"))
+			serviceID = serviceID[1]["OS-KSADM:service"]["id"]
+			expected = $aut.service_get(serviceID)[0]
 			$aut.service_delete(serviceID)
-			assert_equal(expected, serviceID)
+			assert(expected)
 		end
 		
 		def test_service_get_fail_to_authenticate
-			count = 0
-			begin
-				serviceID = $aut.service_create("TestService".concat((count = count+1).to_s),"TestService", "This is a test description")[0]
-			end while(serviceID.has_key?("error"))
-			serviceID = serviceID["OS-KSADM:service"]["id"]
-			expected = $fai.service_get(serviceID)
-			$aut.service_delete(serviceID)
-			assert(expected == nil)
+			expected = $fai.service_get("testService")[0]
+			assert(not expected)
 		end
 		
 		def test_service_get_does_not_exist
 			expected = $aut.service_get("TestService")[0]
-			assert(expected == nil)
+			assert(not expected)
 		end
 	end #service_get
 	
@@ -80,24 +74,22 @@ class TestService < Test::Unit::TestCase
 		def test_service_delete
 			count = 0
 			begin
-				expected = $aut.service_create("TestService".concat((count = count+1).to_s), "TestService", "This is a test description")[0]
-			end while(expected.has_key?("error"))
-			expected = expected["OS-KSADM:service"]["id"]
+				expected = $aut.service_create("TestService".concat((count = count+1).to_s), "TestService", "This is a test description")
+			end while(expected[1]has_key?("error"))
+			expected = expected[1]["OS-KSADM:service"]["id"]
 			$aut.service_get(expected)
 			expected = $aut.service_delete(expected)[0]
-			assert(expected == true)
+			assert(expected)
 		end	
 		
 		def test_service_delete_fail_to_authenticate
-			real = $aut.service_create("TestService", "TestService", "This is a test description")["OS-KSADM:service"]["id"][0]
-			expected = $fai.service_delete("123456")
-			$aut.service_delete(real)
-			assert(expected == false)
+			expected = $fai.service_delete("123456")[0]
+			assert(not expected)
 		end
 		
 		def test_service_delete_does_not_exist
 			expected = $aut.service_delete("123456")[0]
-			assert(expected == false)
+			assert(not expected )
 		end
 	end #service_delete
 	
