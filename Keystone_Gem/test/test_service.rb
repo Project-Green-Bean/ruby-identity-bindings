@@ -17,7 +17,7 @@ class TestService < Test::Unit::TestCase
 		
 		def test_service_list_fail_to_authenticate
 			expected = $fai.service_list[0]
-			assert(not expected)
+			assert(!expected)
 		end
 	end #service_list
 	
@@ -36,7 +36,7 @@ class TestService < Test::Unit::TestCase
 		
 		def test_service_create_fail_to_authenticate
 			expected = $fai.service_create("TestService", "TestService", "This is a test description")[0]
-			assert(not expected)
+			assert(!expected)
 		end	
 =begin
 		def test_service_create_already_exists
@@ -60,12 +60,12 @@ class TestService < Test::Unit::TestCase
 		
 		def test_service_get_fail_to_authenticate
 			expected = $fai.service_get("testService")[0]
-			assert(not expected)
+			assert(!expected)
 		end
 		
 		def test_service_get_does_not_exist
 			expected = $aut.service_get("TestService")[0]
-			assert(not expected)
+			assert(!expected)
 		end
 	end #service_get
 	
@@ -84,12 +84,12 @@ class TestService < Test::Unit::TestCase
 		
 		def test_service_delete_fail_to_authenticate
 			expected = $fai.service_delete("123456")[0]
-			assert(not expected)
+			assert(!expected)
 		end
 		
 		def test_service_delete_does_not_exist
 			expected = $aut.service_delete("123456")[0]
-			assert(not expected )
+			assert(!expected )
 		end
 	end #service_delete
 	
