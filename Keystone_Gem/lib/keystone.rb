@@ -344,19 +344,22 @@ class Keystone
 				curl.headers['Content-Type'] = 'application/json'
 			end
 			parsed_json = JSON.parse(post_call.body_str)
-			return [parsed_json, "Success"]
+			if (parsed_json.keys.include? 'error') return [false,parsed_json]
+			else return [true,parsed_json]
+			end
 		end
 
 		def role_delete(role)
 			a = role_list
-			if(a.to_s.include? role) 
+			if(a.values.include? role) 
 				delete_call = Curl::Easy.http_delete("#{@ip_address}:#{@port_2}/v2.0/OS-KSADM/roles/#{role}"
 				) do |curl|
 					curl.headers['x-auth-token'] = @token
 				end
-				return [true, "Tenant Deleted Successfully"]
+				parsed_json = JSON.parse(delete_call.body_str)
+				return [true,parsed_json]
 			else
-				return [false, "Tenant failed to Delete"]
+				return [false,nil]
 			end
 		end
 
@@ -364,12 +367,10 @@ class Keystone
 			get_call = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/OS-KSADM/roles/#{role}"
 			) do |curl| curl.headers['x-auth-token'] = @token end
 			parsed_json = JSON.parse(get_call.body_str)
-			if (parsed_json.to_s.include? 'error')
-				error = parsed_json["error"]["message"]
-				e = error.to_s
-				return [nil, e]
-		    else
-				return [parsed_json, "Success"]
+			if (parsed_json.keys.include? 'error')
+				return [false, parsed_json]
+		   	else
+				return [true, parsed_json]
 			end
 		end
 
@@ -377,7 +378,11 @@ class Keystone
 			get_call = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/OS-KSADM/roles"
 			) do |curl| curl.headers['x-auth-token'] = @token end
 			parsed_json = JSON.parse(get_call.body_str)
-			return [parsed_json, "Success"]
+			if (parsed_json.keys.include? 'error')
+				return [false, parsed_json]
+		   	else
+				return [true, parsed_json]
+			end
 		end	
 	end #ROLE OPS
 
