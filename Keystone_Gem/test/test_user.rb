@@ -11,13 +11,13 @@ class TestUser < Test::Unit::TestCase
     c.auth($tenant)
     withoutNewUser = c.user_list
     newTenant = c.tenant_create('test_user_list', 'mock tenant')
-    newUser= c.user_create('test_user_list','test_user_list@com.com','secret', newTenant[0]['tenant']['id'])
+    newUser= c.user_create('test_user_list','test_user_list@com.com','secret', newTenant[1]['tenant']['id'])
     withNewUser = c.user_list
 
     assert(true, withoutNewUser==withNewUser) #makes sure that the list does in fact change
 
     c.user_delete(newUser['user']['id'])
-    c.tenant_delete(newTenant[0]['tenant']['id'])
+    c.tenant_delete(newTenant[1]['tenant']['id'])
   end
 
   def test_user_create
@@ -26,28 +26,28 @@ class TestUser < Test::Unit::TestCase
     c.auth($tenant)
     withoutNew = c.user_list['users']
     newTenant = c.tenant_create("test_user_create", "")
-    newUser = c.user_create("test_user_create", "email", "password", newTenant[0]['tenant']['id'])
+    newUser = c.user_create("test_user_create", "email", "password", newTenant[1]['tenant']['id'])
     withNew = c.user_list['users']
 
     difference = withNew.size - withoutNew.size
     assert_equal(1, difference)
 
     c.user_delete(newUser['user']['id'])
-    c.tenant_delete(newTenant[0]['tenant']['id'])
+    c.tenant_delete(newTenant[1]['tenant']['id'])
   end
 
   def test_user_create_duplicate
     c = Keystone.new($admin, $adminPass, $serverURL, $serverPort1, $serverPort2)
     c.auth($tenant)
     newTenant = c.tenant_create("test_user_create_duplicate", "")
-    newUser = c.user_create("test_user_create_duplicate", "email", "password", newTenant[0]['tenant']['id'])
-    duplicateUser = c.user_create("test_user_create_duplicate", "email", "password", newTenant[0]['tenant']['id'])
+    newUser = c.user_create("test_user_create_duplicate", "email", "password", newTenant[1]['tenant']['id'])
+    duplicateUser = c.user_create("test_user_create_duplicate", "email", "password", newTenant[1]['tenant']['id'])
 
     assert_equal(409, duplicateUser[1]['code'])
 
 
     c.user_delete(newUser['user']['id'])
-    c.tenant_delete(newTenant['tenant'])
+    c.tenant_delete(newTenant[1]['tenant']['id'])
 
   end
 
@@ -57,7 +57,7 @@ class TestUser < Test::Unit::TestCase
     c.auth($tenant)
 
     newUser = c.user_create("test_user_create_invalid_tenant", "email", "password", "TheOddsOfHavingThisTenantIDIsVeryUnlikely")
-    assert_equal(404, newUser['error']['code'])
+    assert_equal(404, newUser[1]['code'])
 
   end
 
@@ -68,7 +68,7 @@ class TestUser < Test::Unit::TestCase
 
     withoutUser = c.user_list
     newTenant = c.tenant_create("test_user_delete", "")
-    newUser = c.user_create("test_user_delete", "email", "password", newTenant[0]['tenant']['id'])
+    newUser = c.user_create("test_user_delete", "email", "password", newTenant[1]['tenant']['id'])
     withUser = c.user_list
 
     difference = withUser['users'].size - withoutUser['users'].size
@@ -77,7 +77,7 @@ class TestUser < Test::Unit::TestCase
     userDeletedList = c.user_list
     difference = withoutUser['users'].size - userDeletedList['users'].size
     assert_equal(0, difference)
-    c.tenant_delete(newTenant[0]['tenant']['id'])
+    c.tenant_delete(newTenant[1]['tenant']['id'])
 
 
   end
@@ -104,12 +104,12 @@ class TestUser < Test::Unit::TestCase
     a = Keystone.new($admin, $adminPass, $serverURL, $serverPort1, $serverPort2)
     a.auth($tenant)
     newTenant = a.tenant_create("user_get_tenant", "for testing purposes")
-    newUser = a.user_create("user_get", "secret", "user_get_email", newTenant[0]['tenant']['id'])
+    newUser = a.user_create("user_get", "secret", "user_get_email", newTenant[1]['tenant']['id'])
 
     assert_equal(newUser["user"]["id"],a.user_get(newUser['user']['id'])['user']['id'])
 
     a.user_delete(newUser["user"]["id"])
-    a.tenant_delete(newTenant[0]['tenant']['id'])
+    a.tenant_delete(newTenant[1]['tenant']['id'])
   end
 
   def test_user_get_doesnt_exist
@@ -127,15 +127,15 @@ class TestUser < Test::Unit::TestCase
     a = Keystone.new($admin, $adminPass, $serverURL, $serverPort1, $serverPort2)
     a.auth($tenant)
     newTenant = a.tenant_create("test_password_update", "for testing purposes")
-    newUser = a.user_create("test_password_update", "password@yahoo", "secret", newTenant[0]['tenant']['id'])
+    newUser = a.user_create("test_password_update", "password@yahoo", "secret", newTenant[1]['tenant']['id'])
 
     a.user_password_update(newUser['user']['id'], "compromised")
     b = Keystone.new("test_password_update", "compromised", $serverURL,$serverPort1,$serverPort2)
 
-    assert_equal(b.auth(newTenant[0]['tenant']['name'])[0],true)
+    assert_equal(b.auth(newTenant[1]['tenant']['name'])[0],true)
 
     a.user_delete(newUser['user']['id'])
-    a.tenant_delete(newTenant[0]['tenant']['id'])
+    a.tenant_delete(newTenant[1]['tenant']['id'])
   end
 
 =begin
