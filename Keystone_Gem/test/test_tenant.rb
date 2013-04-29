@@ -65,7 +65,7 @@ class TestTenant < Test::Unit::TestCase
 		if id != 0
 			expected = a[0]
 		else
-			excpected = false
+			expected = false
 		end
 		assert_equal expected, true
 	end
