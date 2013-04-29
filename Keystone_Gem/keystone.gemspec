@@ -7,5 +7,5 @@ Gem::Specification.new do |s|
 	s.description 	= "keystone language binding"
 	s.authors 		= "me"
 	s.email 		= "me@gmail.com"
-	s.files 		= ["lib/keystone.rb"]
+	s.files 		= ["lib/keystone.rb"] + Dir.glob("{test} /*")
 end
