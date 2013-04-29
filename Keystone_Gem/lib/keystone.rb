@@ -483,13 +483,11 @@ class Keystone
 
   end #USER_ROLE OPS
 
-
-  begin #ENDPOINT OPS
-
+ begin #ENDPOINT OPS
+ 
     def endpoint_create(region, service_id, publicurl, adminurl, internalurl)
-	
-      body        = {"endpoint" => {"region"   => region, "service_id" => service_id, "publicurl" => publicurl,
-                                    "adminurl" => adminurl, "internalurl" => internalurl}}
+      body        = {"endpoint" => {"region"   => region, "service_id" => service_id,
+ 		"publicurl" => publicurl, "adminurl" => adminurl, "internalurl" => internalurl}}
       json_string = JSON.generate(body)
       post_call   = Curl::Easy.http_post("#{@ip_address}:#{@port_2}/v2.0/endpoints", json_string
       ) do |curl|
@@ -497,50 +495,40 @@ class Keystone
         curl.headers['Content-Type'] = 'application/json'
       end
       parsed_json = JSON.parse(post_call.body_str)
-
       return parsed_json
     end
 
     def endpoint_delete(endpoint_id)
-	  
 		begin
 		  delete_call = Curl::Easy.http_delete("#{@ip_address}:#{@port_2}/v2.0/endpoints/#{endpoint_id}"
 		  ) do |curl|
 			curl.headers['x-auth-token'] = @token
 		  end
-		  
-		  return true
+		  return [true,JSON.parse(delete_call.body_str)]
 		rescue
-		  return false
+		  return [false,JSON.parse(delete_call.body_str)]
 		end
-
     end
 
     def endpoint_get(endpoint_id)
-
-      value = endpoint_list["endpoints"]
+      value = endpoint_list[1]["endpoints"]
       count = 0
       while count < value.length do
-        if (value[count]["id"] == endpoint_id) then
-          return value[count]
-        end
+        if (value[count]["id"] == endpoint_id) then return [true,value[count]] end
         count += 1
       end
-	  
-      return nil
+      return [false,nil]
     end
 
     def endpoint_list
-		
       get_call    = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/endpoints/"
       ) do |curl|
         curl.headers['x-auth-token'] = @token
       end
-
       parsed_json = JSON.parse(get_call.body_str)
-
-      return parsed_json
+      return [true,parsed_json] #No obvious fail case on our side
     end
   end #ENDPOINT OPS
+end
 end
 
