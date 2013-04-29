@@ -125,6 +125,50 @@ class Keystone
 
       return parsed_json
     end
+
+#_______________________________________________________________________________________________     
+    def user_update(email, id)
+=begin
+      name_blank = (name.nil?) or (name.empty?)
+      email_blank = (email.nil?) or (email.empty?)
+      no_user = (user_get(id).nil?) or (user_get(id).empty?)
+
+      if(name_blank && email_blank)
+        comment = "No update occured: blank username and email."
+        return [nil,comment]
+      elsif(no_user)
+        comment = "User update failed: no user for id #{id}."
+        return [nil,comment]
+      elsif(name_blank)   
+        comment = "No username update occured."
+        user = {"user" => {"email" => email, "enabled" => true}}
+      elsif(email_blank)
+        comment = "No email update occured."
+        user = {"user" => {"name" => name, "enabled" => true}}
+      else
+        comment = "User successfully updated: #{name}, #{email}"
+        user = {"user" => {"name" => name, "email" => email, "enabled" => true}}
+      end
+=end
+      user = {"user" => {"email" => email, "enabled" => true}}
+      json_string = JSON.generate(user)
+      post_call   = Curl::Easy.http_put("#{@ip_address}:#{@port_2}/v2.0/users/#{id}/OS-KSADM/email", json_string
+      ) do |curl|
+        curl.headers['x-auth-token'] = @token
+        curl.headers['Content-Type'] = 'application/json'
+      end
+      parsed_json = JSON.parse(post_call.body_str)
+
+      if (parsed_json.to_s.include? 'error')
+        error = parsed_json["error"]["message"]
+        e = error.to_s
+        return [nil, e]
+      else
+        return [parsed_json, "user updated successfully"]
+      end
+
+    end
+  #_______________________________________________________________________________________________   
   end #USER OPS
 
   begin #SERVICE OPS
@@ -338,31 +382,101 @@ class Keystone
 	end #ROLE OPS
 
 	
+  begin #USER_ROLE OPS
+#_______________________________________________________________________________________________  
     def user_role_add(tenant_id, user_id, role_id)
-      update_call = Curl::Easy.http_put("#{@ip_address}:#{@port_2}/v2.0/tenants/#{tenant_id}/users/#{user_id}/roles/OS-KSADM/#{role_id}", nil
+      nil_error = (tenant_id.nil?) or (tenant_id.empty?) or
+                  (user_id.nil?)   or (user_id.empty?)   or
+                  (role_id.nil?)   or (role_id.empty?)
+      role = (role_get(role_id))
+                          
+      if(nil_error)
+        msg = "user_role_add unsuccessful: one of the fields was empty"
+        return [false, msg]     
+      elsif(tenant_get(tenant_id)[0].nil?)
+        msg = "user_role_add unsuccessful: error produced for #{tenant_id}"
+        return [false, msg]
+      elsif(user_get(user_id).hasKey? 'error')
+        msg = "user_role_add unsuccessful: error produced for #{user_id}"
+        return [false, msg]
+      elsif(role[0].nil?)
+        msg = "user_role_add unsuccessful: error produced for #{role_id}"
+        return [false, msg]
+      end
+      
+      post_call = Curl::Easy.http_put("#{@ip_address}:#{@port_2}/v2.0/tenants/#{tenant_id}/users/#{user_id}/roles", role_id
       ) do |curl|
         curl.headers['x-auth-token'] = @token
+        curl.headers['Content-Type'] = 'application/json'
       end
-      return
-    end
+      parsed_json = JSON.parse(post_call.body_str)
 
+      if (parsed_json.to_s.include? 'error')
+        error = parsed_json["error"]["message"]
+        e = error.to_s
+        return [false, e]
+      else
+        return [true, "Role added successfully"]
+      end
+    end
+#_______________________________________________________________________________________________      
     def user_role_remove(tenant_id, user_id, role_id)
-      delete_call = Curl::Easy.http_delete("#{@ip_address}:#{@port_2}/v2.0/tenants/#{tenant_id}/users/#{user_id}/roles/OS-KSADM/#{role_id}"
-      ) do |curl|
+      
+      nil_error = (tenant_id.nil?) or (tenant_id.empty?) or
+                  (user_id.nil?)   or (user_id.empty?)   or
+                  (role_id.nil?)   or (role_id.empty?)
+      roles = user_role_list(tenant_id, user_id)
+      
+      if(nil_error)
+        msg = "user_role_remove unsuccessful: one of the fields was empty"
+        return [false, msg]     
+      elsif(tenant_get(tenant_id)[0].nil?)
+        msg = "user_role_remove unsuccessful: error produced for #{tenant_id}"
+        return [false, msg]
+      elsif(user_get(user_id).hasKey? 'error')
+        msg = "user_role_remove unsuccessful: error produced for #{user_id}"
+        return [false, msg]
+      elsif(role_get(role_id)[0].nil?)
+        msg = "user_role_remove unsuccessful: error produced for #{role_id}"
+        return [false, msg]
+      elsif(!(roles.to_is.include? roles))
+         msg = "Role is not assigned to user: #{role_id}"
+         return [false, msg]
+      end
+      
+      delete_call = Curl::Easy.http_delete("#{@ip_address}:#{@port_2}/v2.0/tenants/#{tenant_id}/users/#{user_id}/roles/#{role_id}}"
+        ) do |curl|
         curl.headers['x-auth-token'] = @token
       end
-
+      parsed_json = JSON.parse(delete_call.body_str)
+      
+      if(parsed_json.to_s.include? 'error')
+        error = parsed_json["error"]["message"]
+        e = error.to_s
+        return [false, e]
+      else
+        return [true, "user_role_remove successful"]
+      end
     end
-
+    
+#_______________________________________________________________________________________________ 
     def user_role_list(tenant_id, user_id)
-      get_call    = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/tenants/#{tenant_id}/users/#{user_id}/roles"
+      get_call = Curl::Easy.http_get("#{@ip_address}:#{@port_2}/v2.0/tenants/#{tenant_id}/users/#{user_id}/roles"
       ) do |curl|
         curl.headers['x-auth-token'] = @token
       end
       parsed_json = JSON.parse(get_call.body_str)
-
-      return parsed_json
+      if(parsed_json.to_s.include? 'error')
+        error = parsed_json["error"]["message"]
+        e = error.to_s
+        return[nil, e]
+      else
+        return [parsed_json,"user_role_list success"]
+      end
     end
+#_______________________________________________________________________________________________ 
+
+  end #USER_ROLE OPS
 
 
   begin #ENDPOINT OPS
