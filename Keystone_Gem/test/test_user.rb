@@ -1,6 +1,6 @@
 require File.join(File.dirname(__FILE__), '../lib/keystone.rb')
 require 'test/unit'
-require 'test_parameters'
+require File.join(File.dirname(__FILE__), '../test/test_parameters.rb')
 
 
 class TestUser < Test::Unit::TestCase
@@ -14,10 +14,12 @@ class TestUser < Test::Unit::TestCase
     newUser= c.user_create('test_user_list','test_user_list@com.com','secret', newTenant[1]['tenant']['id'])
     withNewUser = c.user_list
 
-    assert(withoutNewUser==withNewUser) #makes sure that the list does in fact change
+    assert_equal(false, withoutNewUser==withNewUser) #makes sure that the list does in fact change
 
     c.user_delete(newUser['user']['id'])
     c.tenant_delete(newTenant[1]['tenant']['id'])
+
+    assert(withoutNewUser == c.user_list)
   end
 
   def test_user_create
