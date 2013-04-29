@@ -5,36 +5,31 @@ require File.join(File.dirname(__FILE__), '../test/test_parameters.rb')
 #testing catalog and token_get
 
 class TestOther < Test::Unit::TestCase
-	
+	$aut = Keystone.new($admin,$adminPass,$serverURL,$serverPort1,$serverPort2)
+	$fai = Keystone.new($admin,$randomPass,$serverURL,$serverPort1,$serverPort2)
+	$aut.auth($tenant)
+	$fai.auth($tenant)
 	#token tests
 	def test_token_get	
-			c = Keystone.new($admin, $adminPass, $serverURL, $serverPort1, $serverPort2)
-			c.auth($tenant)
-			expected = c.token_get
-			assert_not_nil(expected)
+			expected = $aut.token_get
+			assert_equal expected, true
 	end
 
 	def test_failure_auth_token_get	
-			c = Keystone.new($admin, $adminPass, $serverURL, $serverPort1, $serverPort2)
-			c.auth("WRONG")
-			expected = c.token_get
-			assert_nil(expected)
+			expected = $fai.token_get
+			assert_equal expected, false
 	end
 
 
 	#catalog tests
 	def test_catalog	
-			c = Keystone.new($admin, $adminPass, $serverURL, $serverPort1, $serverPort2)
-			c.auth($tenant)
-			expected = c.catalog
-			assert_not_nil(expected)
+			expected = $aut.catalog
+			assert_equal expected, true
 	end
 
 	def test_failure_auth_catalog
-			c = Keystone.new($admin, $adminPass, $serverURL, $serverPort1, $serverPort2)
-			c.auth("WRONG")
-			expected = c.catalog
-			assert_nil(expected)
+			expected = $fai.catalog
+			assert_equal expected, false
 	end
 
 end

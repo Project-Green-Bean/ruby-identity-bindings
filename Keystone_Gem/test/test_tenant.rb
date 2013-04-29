@@ -15,15 +15,15 @@ class TestTenant < Test::Unit::TestCase
 	def test_tenant_list	
 		a = $aut.tenant_list
 		expected = a[0]
-		assert_not_nil(expected)
+		assert_equal expected, true
 	end
 	
 	def tenant_list_different_tenant
 		d = Keystone.new("test01u",$adminPass,$serverURL,$serverPort1,$serverPort2)
 		d.auth("test01")
-		a = $aut.tenant_list
+		a = d.tenant_list
 		expected = a[0]
-		assert_not_nil(expected)
+		assert_equal expected, true
 	end
 	
 	def test_tenant_create
@@ -34,12 +34,12 @@ class TestTenant < Test::Unit::TestCase
 	def test_tenant_get_tenant_in_database
 		id = tenant_id_search($aut, "testing")
 		expected = $aut.tenant_get(id)
-		assert_not_nil(expected[0])
+		assert_equal expected, true
 	end
 	
 	def test_tenant_get_tenant_not_in_database
 		expected = $aut.tenant_get("TENANT_NOT_IN_DATABASE!!")
-		assert_nil(expected[0])
+		assert_equal expected, false
 	end
 	
 	
@@ -52,7 +52,7 @@ class TestTenant < Test::Unit::TestCase
 		else
 			excpected = nil
 		end
-		assert_not_nil(expected)
+		assert_equal expected, true
 	end
 	
 	def test_tenant_delete
