@@ -155,7 +155,7 @@ class Keystone
         return [flag, error]
       end
     end
-#_______________________________________________________________________________________________ 
+ 
     
     def user_role_list(tenant_id, user_id)
       new_url = "#{@ip_address}:#{@port_2}/v2.0/tenants/#{tenant_id}/users/#{user_id}/roles", flag = true
@@ -177,7 +177,6 @@ class Keystone
         return [flag,m]
       end
     end
-#_______________________________________________________________________________________________
 
     def user_role_add(tenant_id, user_id, role_id)
       role = {"role" => {"id" => role_id}}
@@ -203,7 +202,6 @@ class Keystone
         return [flag, m]
       end
     end
-#_______________________________________________________________________________________________      
     
     def user_role_remove(tenant_id, user_id, role_id)
       new_url = "#{@ip_address}:#{@port_2}/v2.0/tenants/#{tenant_id}/users/#{user_id}/roles/OS-KSADM/#{role_id}}", flag = true
